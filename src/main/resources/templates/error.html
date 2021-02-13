@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Your request cannot be processed</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 10pt;
+            padding: 0.1em;
+            margin: 0 auto;
+            box-shadow: 0 1px 10px #a7a7a7, inset 0 1px 0 #fff;
+            background: #fcfcfc;
+        }
+    </style>
+</head>
+<body>
+<h2>Your request cannot be processed</h2>
+<div>Status:<span th:text="${error}"></span>&nbsp;(<span th:text="${status}"></span>)</div>
+
+<th:block th:if="${!#strings.isEmpty(message)}">
+  <pre th:text="${message}"></pre>
+</th:block>
+
+</body>
+</html>

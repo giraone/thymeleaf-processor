@@ -1,0 +1,37 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Error</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            line-height: 1;
+        }
+        body {
+            font-family: "Courier New", "Courier", monospace;
+            font-size: 10pt;
+        }
+        h1 {
+            color: #555;
+            font-size: 12ptm;
+        }
+        div {
+            width: 150mm;
+            height: 170mm;
+            color: #00A;
+            line-break: auto;
+            overflow-wrap: break-word;
+            background-color: #DDD;
+        }
+    </style>
+</head>
+<body>
+<h1>Error</h1>
+<p>Ups, sth. unexpected went wrong!</p>
+<div th:text="${error}"></div>
+</body>
+</html>

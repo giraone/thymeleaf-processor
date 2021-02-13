@@ -1,0 +1,468 @@
+/* Browser CSS RESET */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+body {
+ background-color: #3883fa;
+ color: #FFFFFF;
+ font-family: Arial, Helvetica, sans-serif;
+ margin: 4px;
+}
+
+select {
+  margin-left: 50px;
+  background-color: #3681f8;
+  color: #FFFFFF;
+  font-size: 80%;
+  height: fit-content;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.button {
+    background-color: #3681f8;
+    color: #E0E0E0;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 2px 10px 2px 8px;
+    border: none;
+    margin-left: 5px;
+}
+
+div.main {
+ display: flex;
+ flex-direction: row;
+}
+
+code {
+  background-color: #f5f5f5;
+}
+
+#mainContainer {
+ width: 58vw;
+ height: 93vh;
+}
+
+#viewerContainer {
+    background-color: #3883fa;
+}
+
+/* disable pdf text-selection */
+div.textLayer > span {
+    cursor: default;
+}
+
+/* initial window positions */
+#dataWindow {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+#templateWindow {
+    position: absolute;
+    top: 460px;
+    left: 0px;
+}
+
+/* initial window sizes */
+#dataWindow, #templateWindow {
+    overflow: hidden;
+    width: 680px;
+    height: 440px;
+}
+
+#htmlPreviewWindow {
+    margin: 0px;
+    padding: 0px;
+    position: absolute;
+    top: 0px;
+    left: 700px;
+}
+
+#htmlPreviewControl {
+    margin: 0px;
+    padding: 0px;
+    width: 420mm;
+    height: 594mm;
+    color: black;
+    background-color: white;
+}
+
+/* resizable windows */
+#dataEditor, #templateEditor {
+    width: 100%;
+    height: calc(100% - 25px);
+}
+
+.resizable {
+    resize: both;
+    overflow: scroll;
+}
+
+/* window header and functions */
+span.header {
+    margin: 2px 20px 2px 5px;
+    vertical-align: middle;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: default;
+    display: flex;
+}
+
+div.header {
+    display: flex;
+    justify-content: space-between;
+    background: blue;
+}
+
+#htmlPreviewHeader {
+    display: flex;
+    justify-content: space-between;
+    background: blue;
+    width: 1115px;
+    margin: 2px 20px 2px 5px;
+    vertical-align: middle;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: default;
+    margin: 0;
+}
+
+#dataHeader, #templateHeader {
+    width: 100%;
+}
+
+#position {
+    cursor: default;
+    font-weight: normal;
+    font-size: 90%;
+    color: #FFFFFF;
+    vertical-align: middle;
+    padding-top: 3px;
+    position: absolute;
+    left: 950px;
+}
+
+#positionValue {
+    cursor: default;
+    font-weight: normal;
+    font-size: 90%;
+    color: #FFFFFF;
+    vertical-align: middle;
+    position: absolute;
+    left: 1015px;
+    padding-top: 3px;
+}
+
+.title {
+    white-space: nowrap;
+}
+
+span.window-functions {
+    display: flex;
+    align-content: flex-end;
+}
+
+input.hidden {
+    display: none;
+}
+
+/* drag-n-drop-buttons */
+#dataWindowDrag, #templateWindowDrag {
+    background-color: #3681f8;
+    color: #E0E0E0;
+    cursor: move;
+    width: 17px;
+    height: 25px;
+    border: none;
+    text-align: center;
+    outline: none;
+    font-size: 15px;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    margin-left: 5px;
+}
+
+#htmlPreviewWindowDrag {
+    background-color: blue;
+    cursor: move;
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    left: 1114px;
+    border-width: 0;
+    border-radius: 0 10px 10px 0;
+    padding: 0;
+    margin: 0;
+}
+
+/* collapse-buttons */
+#toggleData, #toggleOverlay {
+    background-color: #3681f8;
+    color: #E0E0E0;
+    cursor: pointer;
+    width: 17px;
+    height: 25px;
+    border: none;
+    text-align: center;
+    outline: none;
+    font-size: 15px;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+}
+
+/* ruler */
+#toggleRuler {
+    margin-left: 10px;
+}
+
+#ruler {
+    display: none;
+}
+.ruler {
+    position: absolute;
+    top: 470px;
+    left: 912px;
+    width: 793px;
+    height: 30px;
+    background: yellow;
+    border-top: 1px solid #555;
+    border-bottom: 1px solid #555;
+    z-index: 1000;
+    cursor: move;
+}
+.ruler .cm, .ruler .mm {
+    position: absolute;
+    border-left: 1px solid #555;
+    height: 14px;
+    width: calc(100%/21);
+}
+.ruler .cm:nth-of-type(1) {
+    border-left: none;
+}
+.ruler .cm:after {
+    position: absolute;
+    bottom: -15px;
+    font: 11px/1 sans-serif;
+}
+.ruler .mm {
+    height: 5px;
+}
+.ruler .mm:nth-of-type(5) {
+    height: 10px;
+}
+/* cm lines */
+.ruler .cm:nth-of-type(1) {
+    left: 0%;
+}
+.ruler .cm:nth-of-type(1):after {
+    content: "0cm";
+    color: black;
+}
+.ruler .cm:nth-of-type(2) {
+    left: calc(100%/21);
+}
+.ruler .cm:nth-of-type(2):after {
+    content: "1";
+    color: black;
+}
+.ruler .cm:nth-of-type(3) {
+    left: calc(100%/21*2);
+}
+.ruler .cm:nth-of-type(3):after {
+    content: "2";
+    color: black;
+}
+.ruler .cm:nth-of-type(4) {
+    left: calc(100%/21*3);
+}
+.ruler .cm:nth-of-type(4):after {
+    content: "3";
+    color: black;
+}
+.ruler .cm:nth-of-type(5) {
+    left: calc(100%/21*4);
+}
+.ruler .cm:nth-of-type(5):after {
+    content: "4";
+    color: black;
+}
+.ruler .cm:nth-of-type(6) {
+    left: calc(100%/21*5);
+}
+.ruler .cm:nth-of-type(6):after {
+    content: "5";
+    color: black;
+}
+.ruler .cm:nth-of-type(7) {
+    left: calc(100%/21*6);
+}
+.ruler .cm:nth-of-type(7):after {
+    content: "6";
+    color: black;
+}
+.ruler .cm:nth-of-type(8) {
+    left: calc(100%/21*7);
+}
+.ruler .cm:nth-of-type(8):after {
+    content: "7";
+    color: black;
+}
+.ruler .cm:nth-of-type(9) {
+    left: calc(100%/21*8);
+}
+.ruler .cm:nth-of-type(9):after {
+    content: "8";
+    color: black;
+}
+.ruler .cm:nth-of-type(10) {
+    left: calc(100%/21*9);
+}
+.ruler .cm:nth-of-type(10):after {
+    content: "9";
+    color: black;
+}
+.ruler .cm:nth-of-type(11) {
+    left: calc(100%/21*10);
+}
+.ruler .cm:nth-of-type(11):after {
+    content: "10";
+    color: black;
+}
+.ruler .cm:nth-of-type(12) {
+    left: calc(100%/21*11);
+}
+.ruler .cm:nth-of-type(12):after {
+    content: "11";
+    color: black;
+}
+.ruler .cm:nth-of-type(13) {
+    left: calc(100%/21*12);
+}
+.ruler .cm:nth-of-type(13):after {
+    content: "12";
+    color: black;
+}
+.ruler .cm:nth-of-type(14) {
+    left: calc(100%/21*13);
+}
+.ruler .cm:nth-of-type(14):after {
+    content: "13";
+    color: black;
+}
+.ruler .cm:nth-of-type(15) {
+    left: calc(100%/21*14);
+}
+.ruler .cm:nth-of-type(15):after {
+    content: "14";
+    color: black;
+}
+.ruler .cm:nth-of-type(16) {
+    left: calc(100%/21*15);
+}
+.ruler .cm:nth-of-type(16):after {
+    content: "15";
+    color: black;
+}
+.ruler .cm:nth-of-type(17) {
+    left: calc(100%/21*16);
+}
+.ruler .cm:nth-of-type(17):after {
+    content: "16";
+    color: black;
+}
+.ruler .cm:nth-of-type(18) {
+    left: calc(100%/21*17);
+}
+.ruler .cm:nth-of-type(18):after {
+    content: "17";
+    color: black;
+}
+.ruler .cm:nth-of-type(19) {
+    left: calc(100%/21*18);
+}
+.ruler .cm:nth-of-type(19):after {
+    content: "18";
+    color: black;
+}
+.ruler .cm:nth-of-type(20) {
+    left: calc(100%/21*19);
+}
+.ruler .cm:nth-of-type(20):after {
+    content: "19";
+    color: black;
+}
+.ruler .cm:nth-of-type(21) {
+    left: calc(100%/21*20);
+}
+.ruler .cm:nth-of-type(21):after {
+    content: "20";
+    color: black;
+}
+.ruler .cm:nth-of-type(22) {
+    left: 100%;
+}
+.ruler .cm:nth-of-type(22):after {
+    content: "";
+    color: black;
+}
+/* mm lines */
+.ruler .mm:nth-of-type(1) {
+    left: 2px;
+}
+.ruler .mm:nth-of-type(2) {
+    left: 6px;
+}
+.ruler .mm:nth-of-type(3) {
+    left: 10px;
+}
+.ruler .mm:nth-of-type(4) {
+    left: 14px;
+}
+.ruler .mm:nth-of-type(5) {
+    left: 18px;
+}
+.ruler .mm:nth-of-type(6) {
+    left: 22px;
+}
+.ruler .mm:nth-of-type(7) {
+    left: 26px;
+}
+.ruler .mm:nth-of-type(8) {
+    left: 30px;
+}
+.ruler .mm:nth-of-type(9) {
+    left: 34px;
+}
+/* rotate ruler */
+.ruler.vertical {
+    transform: rotate(90deg);
+}
+
+#rulerRotate {
+    display: none;
+    cursor: pointer;
+    margin-left: 5px;
+}

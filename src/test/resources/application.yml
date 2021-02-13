@@ -1,0 +1,17 @@
+logging:
+  level:
+    ROOT: INFO
+    web: DEBUG
+    com.giraone: DEBUG
+    # org.springframework: INFO
+
+spring:
+  profiles:
+    active: test
+
+server:
+  port: 10777
+  address: localhost
+
+application:
+  showConfigOnStartup: true

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="google" content="notranslate"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <link rel="stylesheet" href="template.css"/>
+    <link rel="resource" type="application/l10n" href="locale/locale.properties">
+    <link href="jsoneditor/jsoneditor.css" rel="stylesheet" type="text/css">
+    <title>HTML Template Redaktionssystem</title>
+    <script src="js/jquery.min.js"></script>
+    <script src="jsoneditor/jsoneditor.js"></script>
+    <script src="jsoneditor/filereader.js"></script>
+    <script src="jsoneditor/FileSaver.min.js"></script>
+    <script src="template.js"></script>
+</head>
+<body onload="onloadFunction()">
+<div class="main">
+    <div id="dataWindow" class="resizable">
+        <div id="dataHeader" class="header">
+            <span class="header">
+                <span class="title">JSON Testdaten</span>
+                <button id="loadData" class="button">Load</button>
+                <button id="saveData" class="button">Save</button>
+                <input type="file" id="loadDataFile" class="hidden">
+            </span>
+            <span class="window-functions">
+                <button id="toggleData" class="button">-</button>
+                <button id="dataWindowDrag" class="button">#</button>
+            </span>
+        </div>
+        <div id="dataEditor"></div>
+    </div>
+    <div id="templateWindow" class="resizable">
+        <div id="templateHeader" class="header">
+            <span class="header">
+                <span class="title">HTML Template</span>
+                <button id="loadTemplate" class="button">Load</button>
+                <button id="saveTemplate" class="button">Save</button>
+                <input type="file" id="loadTemplateFile" class="hidden">
+            </span>
+            <span class="window-functions">
+                <button id="toggleTemplate" class="button">-</button>
+                <button id="templateWindowDrag" class="button">#</button>
+            </span>
+        </div>
+        <div id="templateEditor"></div>
+    </div>
+    <div id="htmlPreviewWindow" class="resizable">
+        <div id="htmlPreviewHeader" class="header">
+            <span class="header">
+                <span>HTML Preview</span>
+                <button class="button" id="apply">Apply</button>
+                <select id="reportNames"></select>
+            </span>
+        </div>
+        <iframe id="htmlPreviewControl"></iframe>
+    </div>
+</div>
+</body>
+</html>

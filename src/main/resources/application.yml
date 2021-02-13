@@ -1,0 +1,35 @@
+
+logging:
+  level:
+    ROOT: INFO
+    web: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # we want all infos
+        include: '*'
+        # No env - passwords!
+        exclude: env
+    enabled-by-default: true
+  endpoint:
+    health:
+      show-details: always
+
+server:
+  error:
+    include-stacktrace: always
+  max-http-header-size: 64KB
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      location: ${java.io.tmpdir}
+      max-file-size: 256KB
+      max-request-size: 1MB
+
+application:
+  showConfigOnStartup: true
+  html-base: 'http://localhost:8080/'

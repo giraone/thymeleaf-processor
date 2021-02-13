@@ -1,0 +1,400 @@
+<!doctype html>
+<html class="no-js" lang="en" dir="ltr" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+  <base th:href="${_static.base?:'..'}" href="">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Lohnkonto</title>
+  <meta name="google" content="notranslate">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="theme-color" content="#000000">
+  <link th:href="${_static.css}" href="css/lohnonto.css" rel="stylesheet"/>
+</head>
+
+<body>
+
+<div class="grid6">
+  <div class="label">Berater:</div>
+  <div class="value value-left">361204</div>
+  <h1>Lohnkonto</h1>
+  <div class="value value-left">2018</div>
+  <div class="label">Seite</div>
+  <div class="value value-right">1</div>
+  <div class="label">Berater:</div>
+  <div class="value value-left">361204</div>
+  <h1></h1>
+  <div class="value value-left">2018</div>
+  <div class="label">Seite</div>
+  <div class="value value-right">1</div>
+
+  <div class="label">Mandant:</div>
+  <div class="value value-left">11002 Nachberechnung</div>
+  <div class="value value-left col3bis4" th:text="${ergebnisdatenMitarbeiter.familienname} + ', ' + ${ergebnisdatenMitarbeiter.vorname}">Hamann, Ulla-Muster</div>
+  <div class="label">VKZ</div>
+  <div class="value value-right">5V</div>
+
+  <div class="label"></div>
+  <div class="value value-left">Virnsberger Str. 63</div>
+  <div class="label"></div>
+  <div class="value value-right"></div>
+  <div class="label">Datum</div>
+  <div class="value value-right">20.11.2018</div>
+
+  <div class="label"></div>
+  <div class="value value-left">90431 Nürnberg</div>
+  <div class="label"></div>
+  <div class="value value-right"></div>
+  <div class="label">Pers.-Nr:</div>
+  <div class="value value-right">2</div>
+
+  <h2 class="col1bis6">Allgemeine Angaben</h2>
+
+  <div class="label">Name</div>
+  <div class="value value-right" th:text="${ergebnisdatenMitarbeiter.familienname}">Hamann</div>
+  <div class="label">Ersteintrittsdatum</div>
+  <div class="value value-right"></div>
+  <div class="label">Berufsbezeichnung</div>
+  <div class="value value-right">Angestellter</div>
+
+  <div class="label">Vorname</div>
+  <div class="value value-right" th:text="${ergebnisdatenMitarbeiter.vorname}">Ulla-Muster</div>
+  <div class="label">Eintrittsdatum</div>
+  <div class="value value-right" th:text="${T(com.giraone.thymeleaf.service.overlay.el.ExpressionUtils).formatGermanDDMMYYYY(ergebnisdatenMitarbeiter.eintrittsdatum)}">01.01.2014</div>
+  <div class="label">Geburtsdatum</div>
+  <div class="value value-right">06.01.1971</div>
+
+  <div class="label">Straße</div>
+  <div class="value value-right">Buchenstraße 3</div>
+  <div class="label">Austrittsdatum</div>
+  <div class="value value-right"></div>
+  <div class="label">Geburtsort</div>
+  <div class="value value-right"></div>
+
+  <div class="label">PLZ/Ort</div>
+  <div class="value value-right">90562 Kalchreuth</div>
+  <div class="label">Wöch. Arb.-Z.</div>
+  <div class="value value-right"></div>
+  <div class="label">Geburtsland</div>
+  <div class="value value-right">000</div>
+
+  <div class="label">Land</div>
+  <div class="value value-right"></div>
+  <div class="label">Betriebsnummer AG</div>
+  <div class="value value-right">76474235</div>
+  <div class="label"></div>
+  <div class="value value-right"></div>
+
+  <h2 class="col1bis6">Angaben für die Steuer</h2>
+
+  <div class="label">Finanzamtsnummer</div>
+  <div class="value value-right">9241</div>
+  <div class="label">Freibetrag jährlich</div>
+  <div class="value value-right"></div>
+  <div class="label"></div>
+  <div class="value value-right"></div>
+
+  <div class="label">Finanzamtsbezeichnung</div>
+  <div class="value value-right">Nürnberg Zentral</div>
+  <div class="label">Hinzurechn.betrag jährl.</div>
+  <div class="value value-right"></div>
+  <div class="label"></div>
+  <div class="value value-right"></div>
+
+  <div class="label">Steuer-ID</div>
+  <div class="value value-right">54276395085</div>
+  <div class="label">Altersentlastungsbetrag</div>
+  <div class="value value-right"></div>
+  <div class="label"></div>
+  <div class="value value-right"></div>
+
+  <h2 class="col1bis6">Angaben für die Sozialversicherung</h2>
+
+  <div class="label">Versorgungswerk</div>
+  <div class="value value-right">54276395085</div>
+  <div class="label">Mehrfachbeschäftigung</div>
+  <div class="value value-right">Nein</div>
+  <div class="label">Arbeitnehmertyp</div>
+  <div class="value value-right">Angest.</div>
+
+  <div class="label">Betriebs-Nr. VW</div>
+  <div class="value value-right">54276395085</div>
+  <div class="label">Tätigkeitsmerkmal</div>
+  <div class="value value-right">432243211</div>
+  <div class="label">Rentner</div>
+  <div class="value value-right"></div>
+
+  <div class="label">Vers.-Nr</div>
+  <div class="value value-right">13060171S609</div>
+  <div class="label">Geschlecht</div>
+  <div class="value value-right">W</div>
+  <div class="label">Familienstand</div>
+  <div class="value value-right">ledig</div>
+
+  <div class="label">Europ. Vers.-Nr.</div>
+  <div class="value value-right">13060171S609</div>
+  <div class="label">SV-Ausweis vorgelegt</div>
+  <div class="value value-right"></div>
+  <div class="label">Nationalität</div>
+  <div class="value value-right">000</div>
+
+</div>
+
+<h2>Lohnsteuer</h2>
+
+<table class="scrollable">
+  <thead>
+  <tr>
+    <th>Mo<sup>1)</sup></th>
+    <th>Mo der NB</th>
+    <th>VKZ</th>
+    <th>KZ<sup>2)</sup></th>
+    <th>M<sup>3)</sup></th>
+    <th>steuerpfl. Entgelt gesamt<br/>davon Versorgungsbez</th>
+    <th>laufender Arbeitslohn<br/>sonstige Bezüge</th>
+    <th>steuerfreie Bezüge</th>
+    <th>Faktor<br/>Ki.Frb.</th>
+    <th>St.-Tg.</th>
+    <th><sup>5)</sup></th>
+    <th>Lohnsteuer<br/>Kindergeld</th>
+    <th>Kirchensteuer<br/>SolZ</th>
+    <th>StKl<br/>Konf</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td class="value value-right">01</td>
+    <td class="value value-right"></td>
+    <td class="value value-right">24A</td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right">3.620,00</td>
+    <td class="value value-right">3.620,00</td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right">30</td>
+    <td class="value value-right"></td>
+    <td class="value value-right">588,16</td>
+    <td class="value value-right">47,05<br/>32,34</td>
+    <td class="value value-left">1<br/>rk</td>
+  </tr>
+  <tr>
+    <td class="value value-right">01</td>
+    <td class="value value-right">06</td>
+    <td class="value value-right">5GA</td>
+    <td class="value value-right">N</td>
+    <td class="value value-right"></td>
+    <td class="value value-right">3.620,00</td>
+    <td class="value value-right">3.620,00</td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right">30</td>
+    <td class="value value-right"></td>
+    <td class="value value-right">588,16</td>
+    <td class="value value-right">47,05<br/>32,34</td>
+    <td class="value value-left">1<br/>rk</td>
+  </tr>
+  <tr>
+    <td class="value value-right">*02</td>
+    <td class="value value-right">08</td>
+    <td class="value value-right">5VA</td>
+    <td class="value value-right">N</td>
+    <td class="value value-right"></td>
+    <td class="value value-right">5.120,00</td>
+    <td class="value value-right">5.120,00</td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right">30</td>
+    <td class="value value-right"></td>
+    <td class="value value-right">1.075,33</td>
+    <td class="value value-right">86,02<br/>59,14</td>
+    <td class="value value-left">1<br/>rk</td>
+  </tr>
+  </tbody>
+</table>
+
+<h3>Werte für Lohnsteuerbescheinigung</h3>
+
+<div class="grid5">
+
+  <div class="label">St.freie AG-Leistung dopp. Haushalt</div>
+  <div class="value value-right"></div>
+  <div class="label">Gesamtbeitrag freiw./priv. KV/PV</div>
+  <div class="value value-right"></div>
+  <div class="value value-right"></div>
+
+  <div class="label">Steuerfreie Verpflegungszuschüsse</div>
+  <div class="value value-left"></div>
+  <div class="label">AG-Zuschuss freiw./priv. KV/PV</div>
+  <div class="value value-right"></div>
+  <div class="value value-right"></div>
+
+  <div class="label">Steuerfreie Fahrtkosten</div>
+  <div class="value value-left"></div>
+  <div class="label">ZVK/VBLU AN-BeitragV</div>
+  <div class="value value-right"></div>
+  <div class="value value-right"></div>
+
+  <div class="label">Steuerfreie Sammelbeförderung</div>
+  <div class="value value-left"></div>
+  <div class="label">ZVK/VBLU AG-Beitrag stpfl.</div>
+  <div class="value value-right"></div>
+  <div class="value value-right"></div>
+
+  <div class="label">Großbuchstabe M</div>
+  <div class="value value-left"></div>
+  <div class="label">AG-Anteil gesetzl. RV</div>
+  <div class="value value-right">2.869,98</div>
+  <div class="value value-right">56,10</div>
+
+  <div class="label">Nicht ermäßigt besteuerte</div>
+  <div class="value value-left"></div>
+  <div class="label">AG-Anteil Versorgungswerk</div>
+  <div class="value value-right"></div>
+  <div class="value value-right"></div>
+
+  <div class="label">Entschädig./mehrj. Bezüge</div>
+  <div class="value value-left"></div>
+  <div class="label">AN-Anteil gesetzl. RV</div>
+  <div class="value value-right">2.869,98</div>
+  <div class="value value-right">56,10</div>
+
+</div>
+
+<div class="legende">
+  <dl>
+    <dt>1)</dt>
+    <dd>* = In die Summenbildung fließen nur die mit Stern gekennzeichneten Werte ein</dd>
+    <dt>2)</dt>
+    <dd>E1 = Sonstiger Bezug, E5 = sonstiger Bezug, mehr als 1 Jahr betreffend, A = Abfindung, N = Nachberechnung, NE = Nachberechnung Vorjahr nach Entstehungsprinzip, NZ = Nachberechnung Vorjahr nach Zuflussprinzip</dd>
+    <dt>3)</dt>
+    <dd>W = Wiederholungsabrechnung, V = Vortrag</dd>
+    <dt>4)</dt>
+    <dd>H = Hinzurechnungsbetrag</dd>
+    <dt>5)</dt>
+    <dd>S = Sonstiger Bezug nach Vereinfachungsformel</dd>
+  </dl>
+</div>
+
+<hr class="section"/>
+
+<div class="grid6">
+  <div class="label">Berater:</div>
+  <div class="value value-left">361204</div>
+  <h1>Lohnkonto</h1>
+  <div class="value value-left">2018</div>
+  <div class="label">Seite</div>
+  <div class="value value-right">1</div>
+
+  <div class="label">Mandant:</div>
+  <div class="value value-left">11002 Nachberechnung</div>
+  <div class="value value-left col3bis4">Hamann, Ulla-Muster</div>
+  <div class="label">VKZ</div>
+  <div class="value value-right">5V</div>
+
+  <div class="label"></div>
+  <div class="value value-left">Virnsberger Str. 63</div>
+  <div class="label"></div>
+  <div class="value value-right"></div>
+  <div class="label">Datum</div>
+  <div class="value value-right">20.11.2018</div>
+
+  <div class="label"></div>
+  <div class="value value-left">90431 Nürnberg</div>
+  <div class="label"></div>
+  <div class="value value-right"></div>
+  <div class="label">Pers.-Nr:</div>
+  <div class="value value-right">2</div>
+</div>
+
+<h2 class="col1bis6">Pauschalversteuerung</h2>
+
+<table>
+  <thead>
+  <tr>
+    <th>Mo<sup>1)</sup></th>
+    <th>Mo der NB</th>
+    <th>KZ<sup>2)</sup></th>
+    <th>M<sup>3)</sup></th>
+    <th>geringfügige Beschäftigung<br/>kurzfristige Beschäftigung</th>
+    <th>Zukunftssicherung<br/>Fahrtgeld</th>
+    <th>sonstige pauschal versteuerte Bezüge<br/>pauschale LSt<sup>4)</sup></th>
+    <th>pauschale KiSt<br/>pauschaler SolZ</th>
+    <th>Anzahl<br/>U</th>
+    <th>KUG ausgezahlt<br/>S-KUG ausgez.</th>
+    <th>Zuschuss Muttersch.geld/Verdienstausfallentsch.<br/>ATZ-Aufstockungsbetrag</th>
+    <th>Doppelbesteuerungsabkommen<br/>Auslandstätigkeitserlass</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td class="value value-right">05</td>
+    <td class="value value-right">06</td>
+    <td class="value value-right">N</td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right">50,00</td>
+    <td class="value value-right">7,50</td>
+    <td class="value value-right">0,52<br/>0,41</td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+  </tr>
+  <tr>
+    <td class="value value-right">06</td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right">W</td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right">50,00</td>
+    <td class="value value-right">7,50</td>
+    <td class="value value-right">0,52<br/>0,41</td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+  </tr>
+  <tr class="tabellen-summe">
+    <td class="value value-right" colspan="4">**</td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right">400,00</td>
+    <td class="value value-right">60,00</td>
+    <td class="value value-right">4,16<br/>3,28</td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+    <td class="value value-right"></td>
+  </tr>
+  </tbody>
+</table>
+
+<h3>Statistische Werte</h3>
+
+<div class="grid6">
+
+  <div class="label">Anwesenheitstage</div>
+  <div class="value value-right"></div>
+  <div class="label">Urlaubstage Rest Vorjahr</div>
+  <div class="value value-right"></div>
+  <div class="label">Zeitlohnstunden</div>
+  <div class="value value-right"></div>
+
+  <div class="label">Anwesenheitsstunden</div>
+  <div class="value value-right"></div>
+  <div class="label">Urlaubstage laufendes Kalenderjahr</div>
+  <div class="value value-right"></div>
+  <div class="label">Stunden bezahlte</div>
+  <div class="value value-right">20,00</div>
+
+  <div class="label">Krankheitstage bezahlt</div>
+  <div class="value value-right"></div>
+  <div class="label">Urlaubstage genommen</div>
+  <div class="value value-right"></div>
+  <div class="label">Überstunden</div>
+  <div class="value value-right">20,00</div>
+
+</div>
+
+</body>

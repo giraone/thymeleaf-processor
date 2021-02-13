@@ -1,0 +1,23 @@
+<!doctype html>
+<html class="no-js" lang="en" dir="ltr" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Simple HTML template</title>
+  <meta name="google" content="notranslate">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="theme-color" content="#000000">
+  <style></style>
+</head>
+
+<body>
+
+<dl>
+  <dt>Label 1</dt>
+  <dd th:text="${object1.fieldA}">Value 1</dd>
+  <dt>Label 2</dt>
+  <dd th:text="${object1.fieldB}">Value 2</dd>
+</dl>
+
+</body>

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.2</version>
+        <version>2.4.7</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.giraone.thymeleaf</groupId>
@@ -26,7 +26,7 @@
 		    <commons-text.version>1.9</commons-text.version>
         <!-- Test dependency versions -->
         <!-- Plugin versions -->
-        <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <!-- Plugin properties -->
         <junit.utReportFolder>${project.testresult.directory}/test</junit.utReportFolder>
         <junit.itReportFolder>${project.testresult.directory}/integrationTest</junit.itReportFolder>

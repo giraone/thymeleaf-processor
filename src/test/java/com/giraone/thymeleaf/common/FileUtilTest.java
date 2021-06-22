@@ -6,7 +6,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -62,20 +61,35 @@ class FileUtilTest {
     }
 
     @Test
-    void givenDirExists_whenGetFilesInResourceFolder_thenReturnList() {
+    void givenDirExistsWithoutEndsWith_whenGetFilesInResourceFolder_thenReturnList() {
 
-        FilenameFilter filter = (dir, name) -> name.endsWith(SUFFIX);
-        List<File> result = FileUtil.getFilesInResourceFolder(EXISTING_PATH, filter);
+        List<File> result = FileUtil.getFilesInResourceFolder(EXISTING_PATH, null);
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isGreaterThan(0);
+        assertThat(result.get(0).getAbsolutePath()).endsWith(".css");
+    }
+
+    @Test
+    void givenDirExistsWithEndsWith_whenGetFilesInResourceFolder_thenReturnList() {
+
+        List<File> result = FileUtil.getFilesInResourceFolder(EXISTING_PATH, SUFFIX);
         assertThat(result).isNotNull();
         assertThat(result.size()).isGreaterThan(0);
         assertThat(result.get(0).getAbsolutePath()).endsWith(SUFFIX);
     }
 
     @Test
+    void givenDirExistsButWrongEndsWith_whenGetFilesInResourceFolder_thenReturnEmptyArray() {
+
+        List<File> result = FileUtil.getFilesInResourceFolder(EXISTING_PATH, ".xxx");
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(0);
+    }
+
+    @Test
     void givenDirExistsNot_whenGetFilesInResourceFolder_thenReturnNull() {
 
-        FilenameFilter filter = (dir, name) -> name.endsWith(SUFFIX);
-        List<File> result = FileUtil.getFilesInResourceFolder(NOT_EXISTING_PATH, filter);
+        List<File> result = FileUtil.getFilesInResourceFolder(NOT_EXISTING_PATH, SUFFIX);
         assertThat(result).isNull();
     }
 

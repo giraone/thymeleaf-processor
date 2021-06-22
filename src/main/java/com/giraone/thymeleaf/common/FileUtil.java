@@ -2,17 +2,16 @@ package com.giraone.thymeleaf.common;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.ResourceUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -27,20 +26,13 @@ public final class FileUtil {
     private static final String CLASSPATH_PREFIX = "classpath:";
     private static final String SRC_RESOURCES = "./src/main/resources";
 
+    private static final PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver();
+
     // Hide
     private FileUtil() {
     }
 
-    private static ClassLoader getClassLoader() {
-
-        // Resources are in BOOT-INF - this should work.
-        return FileUtil.class.getClassLoader();
-        // If not, see https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-executable-jar-format.html#executable-jar-restrictions
-        // return Thread.currentThread().getContextClassLoader();
-    }
-
-    public static File getFileFromResource(String resourcePath) {
-
+    public static URL getUrlFromResource(String resourcePath) {
         final URL url;
         try {
             url = ResourceUtils.getURL(CLASSPATH_PREFIX + resourcePath);
@@ -48,7 +40,15 @@ public final class FileUtil {
             LOGGER.error("Cannot read resource \"{}\". Path not found!", resourcePath, e);
             return null;
         }
+        return url;
+    }
 
+    public static File getFileFromResource(String resourcePath) {
+
+        final URL url = getUrlFromResource(resourcePath);
+        if (url == null) {
+            return null;
+        }
         if (ResourceUtils.isFileURL(url)) { // The easy part. We are running from a classes folder.
             try {
                 return ResourceUtils.getFile(CLASSPATH_PREFIX + resourcePath);
@@ -80,14 +80,14 @@ public final class FileUtil {
 
     public static byte[] readBytesFromResource(String resourcePath) throws IOException {
 
-        final File file;
+        final URL url;
         try {
-            file = ResourceUtils.getFile(CLASSPATH_PREFIX + resourcePath);
+            url = ResourceUtils.getURL(CLASSPATH_PREFIX + resourcePath);
         } catch (FileNotFoundException e) {
-            LOGGER.error("Cannot read resource \"{}\"", resourcePath, e);
+            LOGGER.error("Cannot read resource \"{}\". Path not found!", resourcePath, e);
             return null;
         }
-        try (InputStream in = new FileInputStream(file)) {
+        try (InputStream in = url.openStream()) {
             return in.readAllBytes();
         }
     }
@@ -103,45 +103,52 @@ public final class FileUtil {
         return bytes == null ? null : new String(bytes, encoding);
     }
 
-    public static List<File> getFilesInResourceFolderOrSrcDir(String path, FilenameFilter filter) {
+    @SuppressWarnings("squid:S1075") // Hard coded file delimiter
+    public static List<File> getFilesInResourceFolderOrSrcDir(String path, String endsWith) {
 
         final File srcFolder = new File(SRC_RESOURCES);
         if (!srcFolder.exists()) {
-            return getFilesInResourceFolder(path, filter);
+            return getFilesInResourceFolder(path, endsWith);
         }
-        final File[] fileList = new File(srcFolder + path).listFiles(filter);
+        final File[] fileList = new File(srcFolder + "/" + path)
+            .listFiles((dir, name) -> endsWith == null || name.endsWith(endsWith));
         if (fileList == null) {
             return null;
         }
         return new ArrayList<>(Arrays.asList(fileList));
     }
 
-    public static List<File> getFilesInResourceFolder(String path, FilenameFilter filter) {
+    @SuppressWarnings("squid:S1075") // Hard coded file delimiter
+    public static List<File> getFilesInResourceFolder(String path, String endsWith) {
 
-        final URL url = getClassLoader().getResource(path);
-        if (url == null) {
+        final String matchingPath = endsWith != null
+            ? CLASSPATH_PREFIX + path + "/*" + endsWith
+            : CLASSPATH_PREFIX + path + "/*";
+        Resource[] resources;
+        try {
+            resources = pathMatchingResourcePatternResolver.getResources(matchingPath);
+        } catch (IOException e) {
+            LOGGER.warn("Cannot list resources: {}/{}", path, endsWith);
             return null;
-        } else {
-            File dir;
-            try {
-                dir = new File(url.toURI());
-            } catch (URISyntaxException e) {
-                LOGGER.debug("invalid url: {}", url);
-                return null;
-            }
-            final File[] fileList = dir.listFiles(filter);
-            if (fileList == null) {
-                return null;
-            }
-            return new ArrayList<>(Arrays.asList(fileList));
         }
+        final List<File> ret = new ArrayList<>();
+        for (Resource resource: resources) {
+            try {
+                final File file = resource.getFile();
+                ret.add(file);
+            } catch (IOException e) {
+                LOGGER.warn("Cannot build file from resource {}", resource.getFilename());
+            }
+        }
+        return ret;
     }
 
+    @SuppressWarnings("squid:S1075") // Hard coded file delimiter
     public static boolean fileExistsInResourceOrSrcDir(String resourcePath) {
 
         final File srcFolder = new File(SRC_RESOURCES);
         if (srcFolder.exists()) {
-            return new File(srcFolder.getAbsolutePath() + resourcePath).exists();
+            return new File(srcFolder.getAbsolutePath() + "/" + resourcePath).exists();
         } else {
             return fileExistsInResource(resourcePath);
         }
@@ -172,13 +179,27 @@ public final class FileUtil {
         }
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+
+    static ClassLoader getClassLoader() {
+
+        // See https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-executable-jar-format.html#executable-jar-restrictions
+        // return Thread.currentThread().getContextClassLoader();
+
+        // Geht nicht (hs)
+        // return ClassLoader.getSystemClassLoader();
+
+        // Ressourcen sind in BOOT-INF - das sollte gehen (hs)
+        return FileUtil.class.getClassLoader();
+    }
+
     static String[] extractPrefixAndSuffix(String path) {
 
         int i = path.lastIndexOf('/');
         if (i >= 0) {
             path = path.substring(i + 1);
         }
-        i = path.lastIndexOf(".");
+        i = path.lastIndexOf('.');
         String prefix;
         String suffix;
         if (i >= 0) {

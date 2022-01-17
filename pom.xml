@@ -5,26 +5,30 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.7</version>
+        <version>2.6.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.giraone.thymeleaf</groupId>
     <artifactId>thymeleaf-processor</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
     <name>thymeleaf-processor</name>
     <description>HTTP endpoint to create HTML from Thymeleaf template and JSON data</description>
 
     <properties>
         <!-- Build properties -->
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.testresult.directory>${project.build.directory}/test-results</project.testresult.directory>
-        <!-- Dependency versions -->
+        <!-- Production code dependency versions -->
 		    <commons-text.version>1.9</commons-text.version>
+        <pd4ml.version>4.0.11</pd4ml.version>
+        <springdoc-core.version>1.6.4</springdoc-core.version>
+        <springdoc-ui.version>1.6.4</springdoc-ui.version>
         <!-- Test dependency versions -->
+        <pdfbox.version>2.0.25</pdfbox.version>
         <!-- Plugin versions -->
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <!-- Plugin properties -->
@@ -66,6 +70,24 @@
             <artifactId>commons-text</artifactId>
             <version>${commons-text.version}</version>
         </dependency>
+        <!-- For HTML to PDF conversion -->
+        <dependency>
+            <groupId>com.pd4ml</groupId>
+            <artifactId>pd4ml</artifactId>
+            <version>${pd4ml.version}</version>
+        </dependency>
+
+        <!--SpringDoc (code-first OpenAPI) dependencies -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-webmvc-core</artifactId>
+            <version>${springdoc-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc-ui.version}</version>
+        </dependency>
 
         <!-- Developer convenience -->
         <dependency>
@@ -84,6 +106,25 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- PDF manipulation lib for testing PDF generation via PD4ML -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>${pdfbox.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>xmpbox</artifactId>
+            <version>${pdfbox.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>preflight</artifactId>
+            <version>${pdfbox.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

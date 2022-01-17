@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -30,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class RenderHtmlControllerIntTest {
 
-    private static final String SRC_INPUT = "/testdata/input";
+    private static final String SRC_INPUT = "testdata/input";
     private static final String TARGET_OUTPUT = "target/test/output";
     private static final String URL ="/api/json-to-html";
 
@@ -168,7 +167,7 @@ public class RenderHtmlControllerIntTest {
         // assert
         String contentAsString = res.getResponse().getContentAsString();
         contentAsString = alignPlatformSpecificProperties(contentAsString);
-        assertThat(contentAsString).contains("An error happened during template parsing");
+        assertThat(contentAsString).contains("Template Input Exception");
     }
 
     //------------------------------------------------------------------------------------------------------------------

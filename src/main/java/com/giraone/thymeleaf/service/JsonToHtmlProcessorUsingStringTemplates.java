@@ -1,9 +1,11 @@
 package com.giraone.thymeleaf.service;
 
 import com.giraone.thymeleaf.common.JsonUtil;
+import com.giraone.thymeleaf.config.ApplicationProperties;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.exceptions.TemplateInputException;
@@ -20,6 +22,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -30,9 +33,12 @@ public class JsonToHtmlProcessorUsingStringTemplates {
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonToHtmlProcessorUsingStringTemplates.class);
     private static final long ONE_HOUR = 3_600_000L;
 
-    private SpringTemplateEngine templateEngine; //NOSONAR
+    private final ApplicationProperties applicationProperties;
+    private SpringTemplateEngine templateEngine;
 
-    public JsonToHtmlProcessorUsingStringTemplates() {
+    @Autowired
+    public JsonToHtmlProcessorUsingStringTemplates(ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
     }
 
     private static Map<String, Object> convertDataJsonStringToMap(String dataJsonString) throws IOException {
@@ -62,8 +68,18 @@ public class JsonToHtmlProcessorUsingStringTemplates {
 
     //------------------------------------------------------------------------------------------------------------------
 
-    public String prepareTemplateWithContentAndData(OutputStream out, String jsonData,
-                                                  String templateContent, String cssContent) throws IOException {
+    public String prepareTemplateWithContentAndDataForPdfOutput(
+        OutputStream out, String jsonData, String templateContent, String cssContent) throws IOException {
+        return prepareTemplateWithContentAndData(out, jsonData, templateContent, cssContent, applicationProperties.getHtmlPdfBase());
+    }
+
+    public String prepareTemplateWithContentAndDataForHtmlOutput(
+        OutputStream out, String jsonData, String templateContent, String cssContent) throws IOException {
+        return prepareTemplateWithContentAndData(out, jsonData, templateContent, cssContent, applicationProperties.getHtmlBase() );
+    }
+
+    public String prepareTemplateWithContentAndData(
+        OutputStream out, String jsonData, String templateContent, String cssContent, String basePath) throws IOException {
 
         final Map<String, Object> data;
         try {
@@ -81,6 +97,15 @@ public class JsonToHtmlProcessorUsingStringTemplates {
                 "<style></style>",
                 "<style>" + cssContent + "</style>");
         }
+
+        final HashMap<String, Object> staticData = new HashMap<>();
+        if (basePath != null && basePath.trim().length() > 0) {
+            staticData.put("base", basePath.trim());
+        } else {
+            staticData.put("base", null);
+        }
+        staticData.put("css", null);
+        data.put("_static", staticData);
 
         final Context context = new Context(Locale.GERMAN, data);
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(out))) {

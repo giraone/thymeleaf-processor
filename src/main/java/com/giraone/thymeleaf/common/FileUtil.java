@@ -49,7 +49,7 @@ public final class FileUtil {
         if (url == null) {
             return null;
         }
-        if (ResourceUtils.isFileURL(url)) { // The easy part. We are running from a classes folder.
+        if (ResourceUtils.isFileURL(url)) { // The easy part. We are running from a classes' folder.
             try {
                 return ResourceUtils.getFile(CLASSPATH_PREFIX + resourcePath);
             } catch (FileNotFoundException e) {

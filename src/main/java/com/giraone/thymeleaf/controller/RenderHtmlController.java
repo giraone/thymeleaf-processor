@@ -2,6 +2,8 @@ package com.giraone.thymeleaf.controller;
 
 import com.giraone.thymeleaf.service.JsonToHtmlProcessorUsingStringTemplates;
 import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,10 @@ public class RenderHtmlController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RenderHtmlController.class);
 
+    public static final String PARAM_data = "data";
+    public static final String PARAM_template = "template";
+    public static final String PARAM_css = "css";
+
     private final JsonToHtmlProcessorUsingStringTemplates jsonToHtmlProcessor;
 
     @Autowired
@@ -33,19 +39,26 @@ public class RenderHtmlController {
     }
 
     @Timed
+    @Operation(
+        summary = "Render an HTML report from a variable template, css file and variable JSON data.",
+        description = "This endpoint is intended to be used ONLY from an editor (Redaktionssystem). " +
+            "The file are passed in a multipart request.")
+    @ApiResponse(responseCode = "200", description = "On successful generation of the HTML.")
     @PostMapping("/json-to-html")
-    public void renderToHtmlByMultipartRequest(@RequestParam("data") MultipartFile dataFile,
-                                               @RequestParam("template") MultipartFile templateFile,
-                                               @RequestParam(value = "css", required = false) MultipartFile cssFile,
-                                               HttpServletResponse response) throws IOException {
+    public void renderToHtmlByMultipartRequest(
+        @RequestParam(PARAM_data) MultipartFile dataFile,
+        @RequestParam(PARAM_template) MultipartFile templateFile,
+        @RequestParam(value = PARAM_css, required = false) MultipartFile cssFile,
+        HttpServletResponse response) throws IOException {
 
-        LOGGER.warn("RenderHtmlController.renderToHtmlByMultipartRequest data={}, template={}, css={}", dataFile, templateFile, cssFile);
+        LOGGER.warn("RenderHtmlController.renderToHtmlByMultipartRequest data={}, template={}, css={}",
+            dataFile, templateFile, cssFile);
         byte[] dataBytes = dataFile.getBytes();
         byte[] htmlTemplateBytes = templateFile.getBytes();
         byte[] cssBytes = cssFile != null ? cssFile.getBytes() : null;
 
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        String error = jsonToHtmlProcessor.prepareTemplateWithContentAndData(
+        String error = jsonToHtmlProcessor.prepareTemplateWithContentAndDataForHtmlOutput(
                 out,
                 new String(dataBytes, StandardCharsets.UTF_8),
                 new String(htmlTemplateBytes, StandardCharsets.UTF_8),

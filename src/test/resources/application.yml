@@ -3,6 +3,7 @@ logging:
     ROOT: INFO
     web: DEBUG
     com.giraone: DEBUG
+    org.apache.fontbox: WARN
     # org.springframework: INFO
 
 spring:

@@ -37,6 +37,7 @@ mvn install:install-file -Dfile=libs/pd4ml-4.0.14.jar \
 
 - 0.3.0, 08.07.2022
   - Dependency upgrade (e.g. Spring Boot 2.7.1, PD4ML 4.0.14)
+  - Extensions for date formatting based on ISO 8601 date strings added
 - 0.2.0, 17.01.202
   - Support for PDF generation via PD4Ml added
   - Switch to Java 17

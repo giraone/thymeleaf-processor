@@ -45,7 +45,8 @@ public class JsonToHtmlProcessorUsingStringTemplates {
         final Map<String, Object> data;
         if (dataJsonString.trim().startsWith("[")) {
             List<Map<String, Object>> listOfMaps = JsonUtil.convertToJsonList(dataJsonString);
-            data = Map.of("list", listOfMaps);
+            data = new HashMap<>(); // must be a mutable map - do not use Map.of
+            data.put("list", listOfMaps);
         } else {
             data = JsonUtil.convertToJsonMap(dataJsonString);
         }
@@ -101,10 +102,7 @@ public class JsonToHtmlProcessorUsingStringTemplates {
         final HashMap<String, Object> staticData = new HashMap<>();
         if (basePath != null && basePath.trim().length() > 0) {
             staticData.put("base", basePath.trim());
-        } else {
-            staticData.put("base", null);
         }
-        staticData.put("css", null);
         data.put("_static", staticData);
 
         final Context context = new Context(Locale.GERMAN, data);

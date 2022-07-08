@@ -27,8 +27,8 @@ spring:
     multipart:
       enabled: true
       location: ${java.io.tmpdir}
-      max-file-size: 256KB
-      max-request-size: 1MB
+      max-file-size: 1MB
+      max-request-size: 2MB
 
 application:
   showConfigOnStartup: true

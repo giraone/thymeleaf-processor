@@ -24,6 +24,10 @@ mvn install:install-file -Dfile=libs/pd4ml-4.0.14.jar \
 
 ## Troubleshooting
 
+### Limits
+
+- The limit for a complete multipart request is currently 2MB and 1 MB for each file. See [application.yml](src/main/resources/application.yml).
+
 ### PDF Display
 
 - Ensure, that your browser (especially *Firefox*) is configured correctly to display PDFs directly (and not externally with Acrobat or download it).

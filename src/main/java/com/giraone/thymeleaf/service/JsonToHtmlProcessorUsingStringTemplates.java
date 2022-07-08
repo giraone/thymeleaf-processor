@@ -102,7 +102,10 @@ public class JsonToHtmlProcessorUsingStringTemplates {
         final HashMap<String, Object> staticData = new HashMap<>();
         if (basePath != null && basePath.trim().length() > 0) {
             staticData.put("base", basePath.trim());
+        } else {
+            staticData.put("base", null);
         }
+        staticData.put("css", null);
         data.put("_static", staticData);
 
         final Context context = new Context(Locale.GERMAN, data);

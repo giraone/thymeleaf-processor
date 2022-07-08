@@ -3,6 +3,7 @@
 ######################
 
 src/main/resources/pd4ml/pd4ml.lic
+libs/
 
 ######################
 # Eclipse

@@ -25,6 +25,7 @@
         <!-- Production code dependency versions -->
 		    <commons-text.version>1.9</commons-text.version>
         <pd4ml.version>4.0.14</pd4ml.version>
+        <batik.version>1.14</batik.version>
         <springdoc-core.version>1.6.9</springdoc-core.version>
         <springdoc-ui.version>1.6.9</springdoc-ui.version>
         <!-- Test dependency versions -->

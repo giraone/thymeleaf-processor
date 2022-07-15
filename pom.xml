@@ -76,7 +76,19 @@
             <artifactId>pd4ml</artifactId>
             <version>${pd4ml.version}</version>
         </dependency>
-
+        <!-- Apache Batik to render SVG graphics into PDF via PD4ML using Graphics 2D -->
+        <dependency>
+          <groupId>org.apache.xmlgraphics</groupId>
+          <artifactId>batik-bridge</artifactId>
+          <version>${batik.version}</version>
+          <exclusions>
+            <!-- xalan/xerces is not needed and is way too old -->
+            <exclusion>
+              <groupId>xalan</groupId>
+              <artifactId>xalan</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
         <!--SpringDoc (code-first OpenAPI) dependencies -->
         <dependency>
             <groupId>org.springdoc</groupId>

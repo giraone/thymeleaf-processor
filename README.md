@@ -14,7 +14,7 @@ The project can be used *standalone* or as a backend service for the editor [thy
 
 ### Alternative manual maven setup for PD4ML
 
-Place the lib in `libs/pd4ml-4.0.11.jar` and perform
+Place the lib in `libs/pd4ml-4.0.14.jar` and perform
 
 ```shell script
 mvn install:install-file -Dfile=libs/pd4ml-4.0.14.jar \

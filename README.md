@@ -12,14 +12,20 @@ The project can be used *standalone* or as a backend service for the editor [thy
   - perform the Maven setup described [here](https://pd4ml.tech/support-topics/maven/) or install the lib manually - see below
   - obtain a license file `pd4ml.lic` and place it into in to `src/main/resources/pd4ml`.
 
+### Using fonts for PDF generation
+
+- See [Preparing TTF Fonts](https://pd4ml.com/support-topics/usage-examples/#ttf-fonts)
+- If an environment variable `PD4ML_FONTS` is defined, the value is passed to *useTTF()*.
+- The directory [src/main/resources/defaultfonts](src/main/resources/defaultfonts) contains a sample font "Perfect\ Pixel".
+
 ### Alternative manual maven setup for PD4ML
 
 Place the lib in `libs/pd4ml-4.0.14.jar` and perform
 
 ```shell script
-mvn install:install-file -Dfile=libs/pd4ml-4.0.14.jar \
+mvn install:install-file -Dfile=libs/pd4ml-4.0.15.jar \
     -DgroupId=com.pd4ml -DartifactId=pd4ml \
-    -Dversion=4.0.14 -Dpackaging=jar
+    -Dversion=4.0.15 -Dpackaging=jar
 ```
 
 ## Troubleshooting
@@ -35,6 +41,8 @@ mvn install:install-file -Dfile=libs/pd4ml-4.0.14.jar \
 
 ## Release Notes
 
+- 0.3.1, 28.09.2022
+  - Dependency upgrade (e.g. Spring Boot 2.7.4, PD4ML 4.0.15)
 - 0.3.0, 08.07.2022
   - Dependency upgrade (e.g. Spring Boot 2.7.1, PD4ML 4.0.14)
   - Extensions for date formatting based on ISO 8601 date strings added

@@ -16,3 +16,4 @@ server:
 
 application:
   showConfigOnStartup: true
+  pd4mlConfiguration.logLevel: 10

@@ -1,0 +1,25 @@
+@page :first {
+  margin: 10pt;
+  size: A4 landscape;
+}
+
+@media not pdf {
+  @font-face {
+    font-family: "Bitstream Vera Serif Bold";
+    src: url("https://mdn.github.io/css-examples/web-fonts/VeraSeBd.ttf");
+  }
+  pre {
+    font-family: "Bitstream Vera Serif Bold", serif;
+  }
+}
+
+@media pdf {
+  @font-face {
+    font-family: "Perfect Pixel";
+    src: url("java:/defaultfonts/perfect-pixel.ttf") format("ttf");
+  }
+  pre {
+    font-family: "Perfect Pixel"
+  }
+}
+

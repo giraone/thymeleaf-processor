@@ -4,6 +4,7 @@ import com.giraone.thymeleaf.service.JsonToHtmlProcessorUsingStringTemplates;
 import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -57,10 +59,24 @@ public class RenderHtmlController {
         byte[] htmlTemplateBytes = templateFile.getBytes();
         byte[] cssBytes = cssFile != null ? cssFile.getBytes() : null;
 
+        final String dataString = new String(dataBytes, StandardCharsets.UTF_8);
+        final Map<String, Object> dataMap;
+        try {
+            dataMap = JsonToHtmlProcessorUsingStringTemplates.convertDataJsonStringToMap(dataString);
+        } catch (IOException e) {
+            LOGGER.error("Failed to parse JSON data\r\n" + dataString, e);
+            response.setContentType(MediaType.TEXT_HTML_VALUE);
+            response.sendError(HttpStatus.BAD_REQUEST.value(),
+                "<hr /><h3>JSON Parsing Exception:</h3>"
+                    + "<pre>" + StringEscapeUtils.escapeHtml4(e.getMessage()) + "</pre>"
+                    + "<h3>JSON Data:</h3>"
+                    + "<pre>" + dataString + "</pre>");
+            return;
+        }
+
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         String error = jsonToHtmlProcessor.prepareTemplateWithContentAndDataForHtmlOutput(
-                out,
-                new String(dataBytes, StandardCharsets.UTF_8),
+                out, dataMap,
                 new String(htmlTemplateBytes, StandardCharsets.UTF_8),
                 cssBytes != null ? new String(cssBytes, StandardCharsets.UTF_8) : null);
 

@@ -7,6 +7,9 @@ public class PdfCreationOptions {
 
     private String documentTitle;
     private String documentAuthor;
+    private String documentSubject;
+    private String documentKeywords;
+    private String documentCreator;
     private boolean pdfA;
     private WatermarkOptions watermarkOptions;
 
@@ -44,6 +47,30 @@ public class PdfCreationOptions {
         this.documentAuthor = documentAuthor;
     }
 
+    public String getDocumentSubject() {
+        return documentSubject;
+    }
+
+    public void setDocumentSubject(String documentSubject) {
+        this.documentSubject = documentSubject;
+    }
+
+    public String getDocumentKeywords() {
+        return documentKeywords;
+    }
+
+    public void setDocumentKeywords(String documentKeywords) {
+        this.documentKeywords = documentKeywords;
+    }
+
+    public String getDocumentCreator() {
+        return documentCreator;
+    }
+
+    public void setDocumentCreator(String documentCreator) {
+        this.documentCreator = documentCreator;
+    }
+
     public boolean isPdfA() {
         return pdfA;
     }
@@ -66,7 +93,7 @@ public class PdfCreationOptions {
     public String toString() {
         return "PdfCreationOptions{" +
             "documentTitle='" + documentTitle + '\'' +
-            ", authorName='" + documentAuthor + '\'' +
+            ", documentAuthor='" + documentAuthor + '\'' +
             ", pdfA=" + pdfA +
             '}';
     }

@@ -6,6 +6,7 @@ import com.pd4ml.Constants;
 import com.pd4ml.PD4ML;
 import com.pd4ml.StatusMessage;
 import io.micrometer.core.annotation.Timed;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.zefer.pd4ml.PD4Constants;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -71,8 +71,20 @@ public class HtmlToPdfConverter {
         configureOptions(pd4ml, pdfCreationOptions);
         pd4ml.readHTML(htmlInputStream, url);
         pd4ml.setHtmlWidth(PD4ML_FIXED_HTML_WIDTH);
-        pd4ml.writePDF(pdfOutputStream);
-        logStatusMessages(pd4ml);
+        if (!StringUtils.isEmpty(pdfCreationOptions.getDocumentTitle())) {
+            pd4ml.setDocumentTitle(pdfCreationOptions.getDocumentTitle());
+        }
+        if (!StringUtils.isEmpty(pdfCreationOptions.getDocumentAuthor())) {
+            pd4ml.setAuthorName(pdfCreationOptions.getDocumentAuthor());
+        }
+        if (pdfCreationOptions.isPdfA()) {
+            pd4ml.writePDF(pdfOutputStream, Constants.PDFA);
+            if (LOGGER.isDebugEnabled()) {
+                logPdfAStatusMessages(pd4ml);
+            }
+        } else {
+            pd4ml.writePDF(pdfOutputStream);
+        }
     }
 
     public void generatePdfStreamFromHtmlString(String htmlString, OutputStream pdfOutputStream, PdfCreationOptions pdfCreationOptions)
@@ -102,15 +114,6 @@ public class HtmlToPdfConverter {
         }
     }
 
-    public byte[] generatePdfByteArrayFromHtmlString(String htmlString, PdfCreationOptions pdfCreationOptions)
-        throws IOException {
-
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            generatePdfStreamFromHtmlString(htmlString, out, pdfCreationOptions);
-            return out.toByteArray();
-        }
-    }
-
     private void configureOptions(PD4ML pd4ml, PdfCreationOptions pdfCreationOptions) throws FileNotFoundException {
 
         pd4ml.setDocumentTitle(pdfCreationOptions.getDocumentTitle());
@@ -126,23 +129,23 @@ public class HtmlToPdfConverter {
             pd4ml.setWatermark("", 0, 0, 0, 0, 0, false, false, "");
         }
 
-        // TODO: PDF/A
         // load and embed fonts
-        //see: https://pd4ml.tech/pdf-fonts/
-        URL fontProperties = getClass().getClassLoader().getResource("fonts/pd4fonts.properties");
-        if (fontProperties != null) {
-            pd4ml.useTTF(fontProperties.getPath(), true);
+        // see: https://pd4ml.tech/pdf-fonts/
+        String fontDir = System.getenv("PD4ML_FONTS");
+        if (fontDir != null) {
+            LOGGER.info("Using fonts from \"{}\"", fontDir);
+            pd4ml.useTTF(fontDir);
         }
 
         Map<String, String> dynamicParams = new HashMap<>();
+        // Add Support for media type "print" in addition to all, screen, pdf
         dynamicParams.put(PD4Constants.PD4ML_MEDIA_TYPE_PRINT, "add");
         pd4ml.setDynamicData(dynamicParams);
     }
 
-    private void logStatusMessages(PD4ML pd4ml) throws com.pd4ml.ForcedTerminationException {
-        StatusMessage[] messages =
-            (StatusMessage[]) pd4ml.getLastRenderInfo(Constants.PD4ML_PDFA_STATUS);
+    private void logPdfAStatusMessages(PD4ML pd4ml) throws com.pd4ml.ForcedTerminationException {
 
+        StatusMessage[] messages = (StatusMessage[]) pd4ml.getLastRenderInfo(Constants.PD4ML_PDFA_STATUS);
         for (StatusMessage statusMessage : messages) {
             String message = (statusMessage.isError() ? "ERROR: " : "WARNING: ") + statusMessage.getMessage();
             LOGGER.debug(message);

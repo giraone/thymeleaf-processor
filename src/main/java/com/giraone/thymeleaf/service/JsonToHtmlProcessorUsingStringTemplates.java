@@ -41,18 +41,6 @@ public class JsonToHtmlProcessorUsingStringTemplates {
         this.applicationProperties = applicationProperties;
     }
 
-    private static Map<String, Object> convertDataJsonStringToMap(String dataJsonString) throws IOException {
-        final Map<String, Object> data;
-        if (dataJsonString.trim().startsWith("[")) {
-            List<Map<String, Object>> listOfMaps = JsonUtil.convertToJsonList(dataJsonString);
-            data = new HashMap<>(); // must be a mutable map - do not use Map.of
-            data.put("list", listOfMaps);
-        } else {
-            data = JsonUtil.convertToJsonMap(dataJsonString);
-        }
-        return data;
-    }
-
     @PostConstruct
     private void init() {
 
@@ -66,32 +54,20 @@ public class JsonToHtmlProcessorUsingStringTemplates {
         LOGGER.info("SpringTemplateEngine using StringTemplateResolver for JsonToHtmlProcessor initialized");
     }
 
-
     //------------------------------------------------------------------------------------------------------------------
 
     public String prepareTemplateWithContentAndDataForPdfOutput(
-        OutputStream out, String jsonData, String templateContent, String cssContent) throws IOException {
-        return prepareTemplateWithContentAndData(out, jsonData, templateContent, cssContent, applicationProperties.getHtmlPdfBase());
+        OutputStream out, Map<String, Object> data, String templateContent, String cssContent) throws IOException {
+        return prepareTemplateWithContentAndData(out, data, templateContent, cssContent, applicationProperties.getHtmlPdfBase());
     }
 
     public String prepareTemplateWithContentAndDataForHtmlOutput(
-        OutputStream out, String jsonData, String templateContent, String cssContent) throws IOException {
-        return prepareTemplateWithContentAndData(out, jsonData, templateContent, cssContent, applicationProperties.getHtmlBase() );
+        OutputStream out, Map<String, Object> data, String templateContent, String cssContent) throws IOException {
+        return prepareTemplateWithContentAndData(out, data, templateContent, cssContent, applicationProperties.getHtmlBase() );
     }
 
     public String prepareTemplateWithContentAndData(
-        OutputStream out, String jsonData, String templateContent, String cssContent, String basePath) throws IOException {
-
-        final Map<String, Object> data;
-        try {
-            data = convertDataJsonStringToMap(jsonData);
-        } catch (IOException e) {
-            LOGGER.error("Failed to parse JSON data\r\n" + jsonData, e);
-            return "<hr /><h3>JSON Parsing Exception:</h3>"
-                + "<pre>" + StringEscapeUtils.escapeHtml4(e.getMessage()) + "</pre>"
-                + "<h3>JSON Data:</h3>"
-                + "<pre>" + jsonData + "</pre>";
-        }
+        OutputStream out, Map<String, Object> data, String templateContent, String cssContent, String basePath) throws IOException {
 
         if (cssContent != null) {
             templateContent = templateContent.replace(
@@ -135,5 +111,17 @@ public class JsonToHtmlProcessorUsingStringTemplates {
                     + "<pre>" + StringEscapeUtils.escapeHtml4(stringWriter.toString()) + "</pre>";
             }
         }
+    }
+
+    public static Map<String, Object> convertDataJsonStringToMap(String dataJsonString) throws IOException {
+        final Map<String, Object> data;
+        if (dataJsonString.trim().startsWith("[")) {
+            List<Map<String, Object>> listOfMaps = JsonUtil.convertToJsonList(dataJsonString);
+            data = new HashMap<>(); // must be a mutable map - do not use Map.of
+            data.put("list", listOfMaps);
+        } else {
+            data = JsonUtil.convertToJsonMap(dataJsonString);
+        }
+        return data;
     }
 }

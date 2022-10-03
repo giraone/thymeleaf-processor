@@ -43,15 +43,16 @@ public class HtmlToPdfConverter {
             String licFileInFileSystem = "./src/main/resources/" + PD4ML_LICENSE_RESOURCE_PATH;
             if (new File(licFileInFileSystem).exists()) {
                 PD4ML_LICENSE_PATH = licFileInFileSystem;
-                LOGGER.error("PD4ML License not found in resource \"{}\"! Switch to relative src/main development location \"{}\"",
+                LOGGER.error("PD4ML license not found in resource \"{}\"! Switch to relative src/main development location \"{}\"",
                     PD4ML_LICENSE_RESOURCE_PATH, PD4ML_LICENSE_PATH);
             } else {
                 PD4ML_LICENSE_PATH = null;
-                LOGGER.warn("PD4ML License neither found in resource \"{}\" or in file system path \"{}\"",
+                LOGGER.warn("PD4ML license neither found in resource \"{}\" or in file system path \"{}\"",
                     PD4ML_LICENSE_RESOURCE_PATH, licFileInFileSystem);
             }
         } else {
             PD4ML_LICENSE_PATH = pd4mlLicFile.getPath();
+            LOGGER.info("Using PD4ML license \"{}\"", PD4ML_LICENSE_PATH);
         }
     }
 
@@ -79,7 +80,7 @@ public class HtmlToPdfConverter {
         }
         if (pdfCreationOptions.isPdfA()) {
             pd4ml.writePDF(pdfOutputStream, Constants.PDFA);
-            if (LOGGER.isDebugEnabled()) {
+            if (LOGGER.isInfoEnabled()) {
                 logPdfAStatusMessages(pd4ml);
             }
         } else {
@@ -148,7 +149,7 @@ public class HtmlToPdfConverter {
         StatusMessage[] messages = (StatusMessage[]) pd4ml.getLastRenderInfo(Constants.PD4ML_PDFA_STATUS);
         for (StatusMessage statusMessage : messages) {
             String message = (statusMessage.isError() ? "ERROR: " : "WARNING: ") + statusMessage.getMessage();
-            LOGGER.debug(message);
+            LOGGER.info(message);
         }
     }
 }

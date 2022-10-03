@@ -3,23 +3,45 @@
   size: A4 landscape;
 }
 
+* {
+  font-family: 'Roboto', sans-serif;
+}
+
+pre {
+  font-family: 'Bad Script', cursive;
+}
+
 @media not pdf {
+
+  /* roboto-regular - latin */
   @font-face {
-    font-family: "Bitstream Vera Serif Bold";
-    src: url("https://mdn.github.io/css-examples/web-fonts/VeraSeBd.ttf");
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: local(''),
+         url('../fonts/roboto-v30-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+         url('../fonts/roboto-v30-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
-  pre {
-    font-family: "Bitstream Vera Serif Bold", serif;
+
+  /* bad-script-regular - latin */
+  @font-face {
+    font-family: 'Bad Script';
+    font-style: normal;
+    font-weight: 400;
+    src: local(''),
+         url('../fonts/bad-script-v16-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+         url('../fonts/bad-script-v16-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
 }
 
 @media pdf {
   @font-face {
-    font-family: "Perfect Pixel";
-    src: url("java:/defaultfonts/perfect-pixel.ttf") format("ttf");
+    font-family: 'Roboto';
+    src: url('java:/defaultfonts/roboto-v30-latin-regular.ttf') format('ttf");
   }
-  pre {
-    font-family: "Perfect Pixel"
+  @font-face {
+    font-family: 'Bad Script';
+    src: url('java:/defaultfonts/bad-script-v16-latin-regular.ttf') format('ttf');
   }
 }
 

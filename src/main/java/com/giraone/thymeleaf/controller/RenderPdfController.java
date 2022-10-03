@@ -117,8 +117,6 @@ public class RenderPdfController {
             pdfCreationOptions.setDocumentCreator((String) metadata.get("creator"));
         }
 
-        pdfCreationOptions.setPdfA(USE_PDF_A);
-
         response.setContentType(MediaType.APPLICATION_PDF_VALUE);
         response.addHeader(HttpHeaders.CONTENT_DISPOSITION, CONTENT_DISPOSITION_VALUE);
 

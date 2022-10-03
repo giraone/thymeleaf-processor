@@ -16,7 +16,11 @@ The project can be used *standalone* or as a backend service for the editor [thy
 
 - See [Preparing TTF Fonts](https://pd4ml.com/support-topics/usage-examples/#ttf-fonts)
 - If an environment variable `PD4ML_FONTS` is defined, the value is passed to the *useTTF()* method of PD4ML.
-- The directory [src/main/resources/defaultfonts](src/main/resources/defaultfonts) contains a sample font "Perfect\ Pixel".
+- The directory [src/main/resources/defaultfonts](src/main/resources/defaultfonts) contains two sample fonts downloaded
+  from https://google-webfonts-helper.herokuapp.com/:
+  - [Roboto](https://google-webfonts-helper.herokuapp.com/fonts/roboto?subsets=latin)
+  - [Bad Script](https://google-webfonts-helper.herokuapp.com/fonts/bad-script?subsets=latin)
+- There is an example [using-fonts](src/test/resources/testdata/input/using-fonts) to show the usage in HTML and PDF generation.
 
 ### PDF/A 1b support
 

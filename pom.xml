@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.giraone.thymeleaf</groupId>
     <artifactId>thymeleaf-processor</artifactId>
-    <version>0.3.1</version>
+    <version>0.3.2</version>
     <name>thymeleaf-processor</name>
     <description>HTTP endpoint to create HTML from Thymeleaf template and JSON data</description>
 
@@ -23,13 +23,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.testresult.directory>${project.build.directory}/test-results</project.testresult.directory>
         <!-- Production code dependency versions -->
-		    <commons-text.version>1.9</commons-text.version>
+		    <commons-text.version>1.10.0</commons-text.version>
         <pd4ml.version>4.0.15</pd4ml.version>
         <batik.version>1.15</batik.version>
         <springdoc-core.version>1.6.11</springdoc-core.version>
         <springdoc-ui.version>1.6.11</springdoc-ui.version>
         <!-- Test dependency versions -->
-        <pdfbox.version>2.0.26</pdfbox.version>
+        <pdfbox.version>2.0.27</pdfbox.version>
         <!-- Plugin versions -->
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <!-- Plugin properties -->
@@ -151,6 +151,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+          <!-- Keep versions up-to-date using
+          mvn versions:update-parent && mvn versions:update-properties && mvn versions:use-latest-versions -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>versions-maven-plugin</artifactId>
+            <configuration>
+              <rulesUri>file:///${project.basedir}/mvn-versions-rules.xml</rulesUri>
+            </configuration>
+          </plugin>
 
             <!-- Test coverage with Jacoco -->
             <plugin>

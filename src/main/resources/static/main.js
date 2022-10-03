@@ -8,7 +8,7 @@ function test1() {
 
 function test2() {
    const jsonContent = '{"name": "Red"}';
-   const templateContent = '<div>Hello&nbsp;<span class="strong" th:text="${name}">World</span>!</div>';
+   const templateContent = '<html><head><style></style></head><body><div>Hello&nbsp;<span class="strong" th:text="${name}">World</span>!</div></body></html>';
    const cssContent = '.strong { color: red; font-weight: bold; }';
    const expected = 'Hello Red';
    multipartUpload('/api/json-to-html', jsonContent, templateContent, cssContent, showHtml, showError, expected);

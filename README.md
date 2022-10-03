@@ -9,23 +9,35 @@ The project can be used *standalone* or as a backend service for the editor [thy
 
 - This project is build for Java 17 (it is using records and multi line strings)
 - If you want to generate PDF from Thymeleaf the [PD4ML v4](https://pd4ml.tech/) library is needed. You have to:
-  - perform the Maven setup described [here](https://pd4ml.tech/support-topics/maven/) or install the lib manually - see below
-  - obtain a license file `pd4ml.lic` and place it into in to `src/main/resources/pd4ml`.
+  - perform the Maven setup described [here](https://pd4ml.tech/support-topics/maven/) or install the lib manually
+  - obtain a license file `pd4ml.lic` and place it into in to `src/main/resources/pd4ml`
 
 ### Using fonts for PDF generation
 
 - See [Preparing TTF Fonts](https://pd4ml.com/support-topics/usage-examples/#ttf-fonts)
-- If an environment variable `PD4ML_FONTS` is defined, the value is passed to *useTTF()*.
+- If an environment variable `PD4ML_FONTS` is defined, the value is passed to the *useTTF()* method of PD4ML.
 - The directory [src/main/resources/defaultfonts](src/main/resources/defaultfonts) contains a sample font "Perfect\ Pixel".
 
-### Alternative manual maven setup for PD4ML
+### PDF/A 1b support
 
-Place the lib in `libs/pd4ml-4.0.14.jar` and perform
+PD4ML can create PDF/A 1b. To use it, set `USE_PDF_A` in
+[RenderHtmlController.java](src/main/java/com/giraone/thymeleaf/controller/RenderHtmlController.java) to true
+and ensure, that all prerequisites for PDF/A 1b are fulfilled (font embedding, Metadata setup, image formats, color profile).
 
-```shell script
-mvn install:install-file -Dfile=libs/pd4ml-4.0.15.jar \
-    -DgroupId=com.pd4ml -DartifactId=pd4ml \
-    -Dversion=4.0.15 -Dpackaging=jar
+## CSS
+
+The CSS passed in the multipart request, must be integrated into the HTML code. To perform this, the content is
+placed into an empty `<style>` tag, which must be present in the HTML header. Example:
+
+```html
+<html>
+<head>
+    <style></style>
+</head>
+<body>
+<div>Hello&nbsp;<span class="strong" th:text="${name}">World</span>!</div>
+</body>
+</html>
 ```
 
 ## Troubleshooting
@@ -41,6 +53,9 @@ mvn install:install-file -Dfile=libs/pd4ml-4.0.15.jar \
 
 ## Release Notes
 
+- 0.3.2, 03.10.2022
+  - Maven plugin `versions-maven-plugin` added
+  - Dependency upgrade
 - 0.3.1, 28.09.2022
   - Dependency upgrade (e.g. Spring Boot 2.7.4, PD4ML 4.0.15)
 - 0.3.0, 08.07.2022

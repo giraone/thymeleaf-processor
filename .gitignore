@@ -3,7 +3,8 @@
 ######################
 
 src/main/resources/pd4ml/pd4ml.lic
-libs/
+_libs/
+_fonts/
 pom.xml.versionsBackup
 
 ######################

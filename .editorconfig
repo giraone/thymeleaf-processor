@@ -549,3 +549,6 @@ ij_kotlin_wrap_first_method_in_call_chain = false
 indent_size = 2
 ij_yaml_keep_indents_on_empty_lines = false
 ij_yaml_keep_line_breaks = true
+
+[*.css]
+indent_size = 2

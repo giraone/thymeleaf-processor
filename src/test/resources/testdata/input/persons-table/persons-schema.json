@@ -1,0 +1,47 @@
+{
+  "$id": "https://example.com/persons.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Group of persons",
+  "type": "object",
+  "required": [ "groupName", "list"],
+  "properties": {
+    "groupName": {
+      "type": "string",
+      "description": "Name of person group"
+    },
+    "list": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/person" }
+    }
+  },
+  "definitions": {
+    "person": {
+      "type": "object",
+      "required": [ "firstName", "lastName", "gender", "dateOfBirth"],
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "description": "The person's first name."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The person's last name."
+        },
+        "gender": {
+          "description": "The person's gender",
+          "type": "string",
+          "enum": ["FEMALE", "MALE", "DIVERS", "UNKNOWN"]
+        },
+        "dateOfBirth": {
+          "description": "Date of birth.",
+          "type": "string",
+          "format": "date"
+        },
+        "salary": {
+          "description": "Monthly salary",
+          "type": "number"
+        }
+      }
+    }
+  }
+}

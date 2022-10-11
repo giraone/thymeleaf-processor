@@ -34,6 +34,7 @@ public class HtmlToPdfConverter {
 
     private static final String PD4ML_LICENSE_RESOURCE_PATH = "pd4ml/pd4ml.lic";
     private static final String PD4ML_LICENSE_PATH;
+    private static final String PD4ML_FONTS_TEMP_DIRECTORY_NAME_PREFIX = "pd4ml-fonts-";
     private static final int PD4ML_FIXED_HTML_WIDTH = 842;
 
     static {
@@ -53,6 +54,15 @@ public class HtmlToPdfConverter {
         } else {
             PD4ML_LICENSE_PATH = pd4mlLicFile.getPath();
             LOGGER.info("Using PD4ML license \"{}\"", PD4ML_LICENSE_PATH);
+        }
+
+        final File fontsDirectory = getFontsDirectory();
+        final String resourcePath = "defaultfonts";
+        final int count = FileUtil.copyResourceFiles(resourcePath, "ttf", fontsDirectory, true);
+        if (count > 0) {
+            LOGGER.info("{} TTF font files copied to \"{}\"", count, fontsDirectory);
+        } else {
+            LOGGER.warn("No TTF font files were copied from \"{}\" to \"{}\"", resourcePath, fontsDirectory);
         }
     }
 
@@ -134,9 +144,12 @@ public class HtmlToPdfConverter {
         // see: https://pd4ml.tech/pdf-fonts/
         String fontDir = System.getenv("PD4ML_FONTS");
         if (fontDir != null) {
-            LOGGER.info("Using fonts from \"{}\"", fontDir);
-            pd4ml.useTTF(fontDir);
+            LOGGER.info("Using fonts from environment variable \"{}\"", fontDir);
+        } else {
+            fontDir = getFontsDirectory().getAbsolutePath();
+            LOGGER.info("Using fonts from temp directory \"{}\" with copied resources", fontDir);
         }
+        pd4ml.useTTF(fontDir, true);
 
         Map<String, String> dynamicParams = new HashMap<>();
         // Add Support for media type "print" in addition to all, screen, pdf
@@ -151,5 +164,10 @@ public class HtmlToPdfConverter {
             String message = (statusMessage.isError() ? "ERROR: " : "WARNING: ") + statusMessage.getMessage();
             LOGGER.info(message);
         }
+    }
+
+    private static File getFontsDirectory() {
+        final long pid = ProcessHandle.current().pid();
+        return new File(System.getProperty("java.io.tmpdir"), PD4ML_FONTS_TEMP_DIRECTORY_NAME_PREFIX + pid);
     }
 }

@@ -1,5 +1,6 @@
 package com.giraone.thymeleaf.common;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,16 +10,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings({"squid:S100", "squid:S1075"}) // naming, configurable path
 class FileUtilTest {
 
-    private static final String EXISTING_PATH = "testdata/input/simple";
-    private static final String SUFFIX = ".html";
-    private static final String NOT_EXISTING_PATH = "testdata/input/not-exists";
     private static final String EXISTING_FILE = "testdata/input/simple/input.html";
     private static final String NON_EXISTING_FILE = "testdata/input/not-exists.html";
     private static final String IMAGE = "images/test-image.png";
@@ -60,37 +57,29 @@ class FileUtilTest {
         assertThat(fileExists).isFalse();
     }
 
-    @Test
-    void givenDirExistsWithoutEndsWith_whenGetFilesInResourceFolder_thenReturnList() {
+    @ParameterizedTest
+    @CsvSource({
+        "testdata/input/simple,.html,2,input.html",
+        "testdata/input/simple,.json,1,input.json",
+        "testdata/input/simple,.xyz,0,",
+        "testdata/input/simple,,4,input.css",
+    })
+    void givenDirExistsWithFiles_whenCopyResourceFiles_thenReturnNumberOfCopies(
+        String resourcePath, String endsWith, int expectedCopies, String expectedFilename) throws IOException {
 
-        List<File> result = FileUtil.getFilesInResourceFolder(EXISTING_PATH, null);
-        assertThat(result).isNotNull();
-        assertThat(result.size()).isGreaterThan(0);
-        assertThat(result.get(0).getAbsolutePath()).endsWith(".css");
-    }
-
-    @Test
-    void givenDirExistsWithEndsWith_whenGetFilesInResourceFolder_thenReturnList() {
-
-        List<File> result = FileUtil.getFilesInResourceFolder(EXISTING_PATH, SUFFIX);
-        assertThat(result).isNotNull();
-        assertThat(result.size()).isGreaterThan(0);
-        assertThat(result.get(0).getAbsolutePath()).endsWith(SUFFIX);
-    }
-
-    @Test
-    void givenDirExistsButWrongEndsWith_whenGetFilesInResourceFolder_thenReturnEmptyArray() {
-
-        List<File> result = FileUtil.getFilesInResourceFolder(EXISTING_PATH, ".xxx");
-        assertThat(result).isNotNull();
-        assertThat(result.size()).isEqualTo(0);
-    }
-
-    @Test
-    void givenDirExistsNot_whenGetFilesInResourceFolder_thenReturnNull() {
-
-        List<File> result = FileUtil.getFilesInResourceFolder(NOT_EXISTING_PATH, SUFFIX);
-        assertThat(result).isNull();
+        final long pid = ProcessHandle.current().pid();
+        final File testDirectory = new File(System.getProperty("java.io.tmpdir"), "test-" + pid);
+        try {
+            int count = FileUtil.copyResourceFiles(resourcePath, endsWith, testDirectory, true);
+            assertThat(count).isEqualTo(expectedCopies);
+            if (count > 0) {
+                final File expectedFile = new File(testDirectory, expectedFilename);
+                assertThat(expectedFile.exists()).isTrue();
+                assertThat(expectedFile.length()).isGreaterThan(0);
+            }
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
+        }
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.giraone.thymeleaf.common;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -12,18 +13,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @SuppressWarnings({"unused", "squid:S125", "squid:S1168"}) // Commented out code, Return empty collection
 public final class FileUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
-    private static final String CLASSPATH_PREFIX = "classpath:";
     private static final String SRC_RESOURCES = "./src/main/resources";
 
     private static final PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver();
@@ -35,7 +33,7 @@ public final class FileUtil {
     public static URL getUrlFromResource(String resourcePath) {
         final URL url;
         try {
-            url = ResourceUtils.getURL(CLASSPATH_PREFIX + resourcePath);
+            url = ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX + resourcePath);
         } catch (FileNotFoundException e) {
             LOGGER.error("Cannot read resource \"{}\". Path not found!", resourcePath, e);
             return null;
@@ -51,7 +49,7 @@ public final class FileUtil {
         }
         if (ResourceUtils.isFileURL(url)) { // The easy part. We are running from a classes' folder.
             try {
-                return ResourceUtils.getFile(CLASSPATH_PREFIX + resourcePath);
+                return ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + resourcePath);
             } catch (FileNotFoundException e) {
                 LOGGER.error("Cannot check resource URL for \"{}\".", resourcePath, e);
                 return null;
@@ -82,7 +80,7 @@ public final class FileUtil {
 
         final URL url;
         try {
-            url = ResourceUtils.getURL(CLASSPATH_PREFIX + resourcePath);
+            url = ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX + resourcePath);
         } catch (FileNotFoundException e) {
             LOGGER.error("Cannot read resource \"{}\". Path not found!", resourcePath, e);
             return null;
@@ -103,44 +101,59 @@ public final class FileUtil {
         return bytes == null ? null : new String(bytes, encoding);
     }
 
-    @SuppressWarnings("squid:S1075") // Hard coded file delimiter
-    public static List<File> getFilesInResourceFolderOrSrcDir(String path, String endsWith) {
+    public static int copyResourceFiles(String resourcePath, String endsWith, File targetDirectory, boolean clean) {
 
-        final File srcFolder = new File(SRC_RESOURCES);
-        if (!srcFolder.exists()) {
-            return getFilesInResourceFolder(path, endsWith);
+        if (!targetDirectory.exists()) {
+            if (!targetDirectory.mkdirs()) {
+                throw new RuntimeException("Cannot create target directory \"" + targetDirectory + "\"!");
+            }
         }
-        final File[] fileList = new File(srcFolder + "/" + path)
-            .listFiles((dir, name) -> endsWith == null || name.endsWith(endsWith));
-        if (fileList == null) {
-            return null;
+        if (clean) {
+            try {
+                FileUtils.cleanDirectory(targetDirectory);
+            } catch (IOException e) {
+                throw new RuntimeException("Cannot clean target directory \"" + targetDirectory + "\"!", e);
+            }
         }
-        return new ArrayList<>(Arrays.asList(fileList));
-    }
-
-    @SuppressWarnings("squid:S1075") // Hard coded file delimiter
-    public static List<File> getFilesInResourceFolder(String path, String endsWith) {
 
         final String matchingPath = endsWith != null
-            ? CLASSPATH_PREFIX + path + "/*" + endsWith
-            : CLASSPATH_PREFIX + path + "/*";
-        Resource[] resources;
+            ? ResourceUtils.CLASSPATH_URL_PREFIX + resourcePath + "/*" + endsWith
+            : ResourceUtils.CLASSPATH_URL_PREFIX + resourcePath + "/*";
+
+        int count = 0;
+        final Resource[] resources;
         try {
             resources = pathMatchingResourcePatternResolver.getResources(matchingPath);
         } catch (IOException e) {
-            LOGGER.warn("Cannot list resources: {}/{}", path, endsWith);
-            return null;
+            throw new RuntimeException("Cannot lookup files in \"{}\"", e);
         }
-        final List<File> ret = new ArrayList<>();
-        for (Resource resource: resources) {
-            try {
-                final File file = resource.getFile();
-                ret.add(file);
-            } catch (IOException e) {
-                LOGGER.warn("Cannot build file from resource {}", resource.getFilename());
+        for (Resource resource : resources) {
+            final String filename = resource.getFilename();
+            if (filename == null) {
+                continue;
             }
+            try {
+                final File targetFile = new File(targetDirectory, filename);
+                final String resourceFilePath = ResourceUtils.CLASSPATH_URL_PREFIX + resourcePath;
+                final URL url;
+                try {
+                    url = resource.getURL();
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException("Cannot get URL for resource file \"" + resourceFilePath
+                        + "/" + resource.getFilename() + "\"!", e);
+                }
+                try (OutputStream out = new FileOutputStream(targetFile)) {
+                    try (InputStream in = url.openStream()) {
+                        long copied = IoStreamUtil.pipeBlobStream(in, out);
+                        LOGGER.warn("Copied resource \"{}\" with {} bytes to temp file \"{}\"", resourceFilePath, copied, targetFile);
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Cannot copy resource file \"" + filename + "\" to \"" + targetDirectory + "\"!", e);
+            }
+            count++;
         }
-        return ret;
+        return count;
     }
 
     @SuppressWarnings("squid:S1075") // Hard coded file delimiter

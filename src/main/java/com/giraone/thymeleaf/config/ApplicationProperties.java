@@ -55,4 +55,14 @@ public class ApplicationProperties {
     public void setPd4mlConfiguration(Pd4mlConfiguration pd4mlConfiguration) {
         this.pd4mlConfiguration = pd4mlConfiguration;
     }
+
+    @Override
+    public String toString() {
+        return "ApplicationProperties{" +
+            "showConfigOnStartup=" + showConfigOnStartup +
+            ", htmlBase='" + htmlBase + '\'' +
+            ", htmlPdfBase='" + htmlPdfBase + '\'' +
+            ", pd4mlConfiguration=" + pd4mlConfiguration +
+            '}';
+    }
 }

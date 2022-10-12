@@ -20,6 +20,7 @@ class FileUtilTest {
     private static final String NON_EXISTING_FILE = "testdata/input/not-exists.html";
     private static final String IMAGE = "images/test-image.png";
     private static final long IMAGE_BYTES = 187;
+    private static final String FONT_NAME_THAT_IS_IN_RESOURCES = "Roboto";
 
     @Test
     void givenResourceExists_whenGetTextFileFromResource_thenReturnFile() {
@@ -62,6 +63,7 @@ class FileUtilTest {
         "testdata/input/simple,.html,2,input.html",
         "testdata/input/simple,.json,1,input.json",
         "testdata/input/simple,.xyz,0,",
+        "testdata/input/**,.css,4,input.css",
         "testdata/input/simple,,4,input.css",
     })
     void givenDirExistsWithFiles_whenCopyResourceFiles_thenReturnNumberOfCopies(
@@ -90,6 +92,12 @@ class FileUtilTest {
         byte[] result = FileUtil.readBytesFromUrl(url);
         assertThat(result).isNotNull();
         assertThat(result.length).isEqualTo(IMAGE_BYTES);
+    }
+
+    @Test
+    void assertThat_getFontNames_works() {
+        assertThat(FileUtil.getPd4mlFontNames()).contains(FONT_NAME_THAT_IS_IN_RESOURCES);
+        assertThat(FileUtil.getPd4mlFontNames()).isNotEmpty();
     }
 
     @ParameterizedTest

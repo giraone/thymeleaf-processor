@@ -33,6 +33,7 @@ public class HtmlToPdfConverter {
     private static final Logger LOGGER = LoggerFactory.getLogger(HtmlToPdfConverter.class);
 
     private static final String PD4ML_LICENSE_RESOURCE_PATH = "pd4ml/pd4ml.lic";
+    private static final String PD4ML_FONTS_RESOURCE_PATH = "defaultfonts";
     private static final String PD4ML_LICENSE_PATH;
     private static final String PD4ML_FONTS_TEMP_DIRECTORY_NAME_PREFIX = "pd4ml-fonts-";
     private static final int PD4ML_FIXED_HTML_WIDTH = 842;
@@ -57,12 +58,11 @@ public class HtmlToPdfConverter {
         }
 
         final File fontsDirectory = getFontsDirectory();
-        final String resourcePath = "defaultfonts";
-        final int count = FileUtil.copyResourceFiles(resourcePath, "ttf", fontsDirectory, true);
+        final int count = FileUtil.copyResourceFiles(PD4ML_FONTS_RESOURCE_PATH, "ttf", fontsDirectory, true);
         if (count > 0) {
             LOGGER.info("{} TTF font files copied to \"{}\"", count, fontsDirectory);
         } else {
-            LOGGER.warn("No TTF font files were copied from \"{}\" to \"{}\"", resourcePath, fontsDirectory);
+            LOGGER.warn("No TTF font files were copied from \"{}\" to \"{}\"", PD4ML_FONTS_RESOURCE_PATH, fontsDirectory);
         }
     }
 
@@ -140,8 +140,8 @@ public class HtmlToPdfConverter {
             pd4ml.setWatermark("", 0, 0, 0, 0, 0, false, false, "");
         }
 
-        // load and embed fonts
-        // see: https://pd4ml.tech/pdf-fonts/
+        // Load and embed fonts. See: https://pd4ml.tech/pdf-fonts/
+        // Font embedding is a pre-requisite to PDF/A, but is also necessary for non PDF/A, when custom fonts are used.
         String fontDir = System.getenv("PD4ML_FONTS");
         if (fontDir != null) {
             LOGGER.info("Using fonts from environment variable \"{}\"", fontDir);

@@ -17,12 +17,16 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"unused", "squid:S125", "squid:S1168"}) // Commented out code, Return empty collection
 public final class FileUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
     private static final String SRC_RESOURCES = "./src/main/resources";
+    private static final String PD4ML_FONTS_PROPERTIES = "defaultfonts/pd4fonts.properties";
 
     private static final PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver();
 
@@ -47,7 +51,7 @@ public final class FileUtil {
         if (url == null) {
             return null;
         }
-        if (ResourceUtils.isFileURL(url)) { // The easy part. We are running from a classes' folder.
+        if (ResourceUtils.isFileURL(url)) { // The easy part. We are running from a classes folder.
             try {
                 return ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + resourcePath);
             } catch (FileNotFoundException e) {
@@ -145,7 +149,7 @@ public final class FileUtil {
                 try (OutputStream out = new FileOutputStream(targetFile)) {
                     try (InputStream in = url.openStream()) {
                         long copied = IoStreamUtil.pipeBlobStream(in, out);
-                        LOGGER.warn("Copied resource \"{}\" with {} bytes to temp file \"{}\"", resourceFilePath, copied, targetFile);
+                        LOGGER.debug("Copied resource \"{}\" with {} bytes to temp file \"{}\"", url, copied, targetFile);
                     }
                 }
             } catch (IOException e) {
@@ -156,12 +160,11 @@ public final class FileUtil {
         return count;
     }
 
-    @SuppressWarnings("squid:S1075") // Hard coded file delimiter
     public static boolean fileExistsInResourceOrSrcDir(String resourcePath) {
 
         final File srcFolder = new File(SRC_RESOURCES);
         if (srcFolder.exists()) {
-            return new File(srcFolder.getAbsolutePath() + "/" + resourcePath).exists();
+            return new File(srcFolder.getAbsolutePath(), resourcePath).exists();
         } else {
             return fileExistsInResource(resourcePath);
         }
@@ -192,6 +195,26 @@ public final class FileUtil {
         }
     }
 
+    public static List<String> getPd4mlFontNames() {
+        try {
+            var stream = readTextFileFromResource(PD4ML_FONTS_PROPERTIES);
+            if (stream != null) {
+                return stream
+                    .lines()
+                    .filter(e -> !e.startsWith("#"))
+                    .map(e -> e.split("="))
+                    .filter(e -> e.length == 2)
+                    .map(e -> e[0].replace("\\ ", " "))
+                    .collect(Collectors.toList());
+            } else {
+                return Collections.emptyList();
+            }
+        } catch (IOException e) {
+            LOGGER.error("Cannot read PD4ML fonts from resources", e);
+            return Collections.emptyList();
+        }
+    }
+
     //------------------------------------------------------------------------------------------------------------------
 
     static ClassLoader getClassLoader() {
@@ -199,7 +222,7 @@ public final class FileUtil {
         // See https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-executable-jar-format.html#executable-jar-restrictions
         // return Thread.currentThread().getContextClassLoader();
 
-        // Geht nicht (hs)
+        // Geht nicht in Tests, die z.B. von Kommandozeile mit mvn ohne fork laufen. Ist generell keine gute Idee. (hs)
         // return ClassLoader.getSystemClassLoader();
 
         // Ressourcen sind in BOOT-INF - das sollte gehen (hs)

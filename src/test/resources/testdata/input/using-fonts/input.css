@@ -37,7 +37,7 @@ pre {
 @media pdf {
   @font-face {
     font-family: 'Roboto';
-    src: url('java:/defaultfonts/roboto-v30-latin-regular.ttf') format('ttf");
+    src: url('java:/defaultfonts/roboto-v30-latin-regular.ttf') format('ttf');
   }
   @font-face {
     font-family: 'Bad Script';

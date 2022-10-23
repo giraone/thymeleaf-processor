@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -105,53 +106,121 @@ public final class FileUtil {
         return bytes == null ? null : new String(bytes, encoding);
     }
 
-    public static int copyResourceFiles(String resourcePath, String endsWith, File targetDirectory, boolean clean) {
+    /**
+     * Copy files from a resource path (classpath with file extension filter) to a target directory in the (local) file system.
+     * The copied files will keep the last modification date of the original file.
+     * @param resourcePath  A classpath: resource, e.g. "defaultfonts", "testdata/simple" or "testdata/". If the value ends with "/",
+     * the directory is looked up recursively.
+     * @param endsWith  An optional (maybe null) file extension, e.g. \".ttf\", \".css\", to be used as a filter.
+     * @param targetDirectory The target directory, where the files are copied to. If the target directory does not exist,
+     * it is automatically created.
+     * @param cleanIfExists A flag to clean the directory, if it already exists.
+     * @param flatten If true, the tree structure is ignored and all file are copied directly into the target directory.
+     * @return the number of copied files.
+     */
+    public static int copyResourceFiles(String resourcePath, String endsWith, File targetDirectory, boolean cleanIfExists, boolean flatten) {
+
+        String classPath;
+        if (resourcePath.endsWith("/")) {
+            classPath = resourcePath + "**/*";
+            resourcePath = resourcePath.substring(0, resourcePath.length() - 1);
+        } else {
+            classPath = resourcePath + "/*";
+        }
+        if (endsWith != null) {
+            classPath += endsWith;
+        }
+        final String matchingPath = ResourceUtils.CLASSPATH_URL_PREFIX + classPath;
+        return copyMatchingResourceFiles(matchingPath, resourcePath, targetDirectory, cleanIfExists, flatten);
+    }
+
+    /**
+     * Copy files from a resource path to a target directory in the (local) file system.
+     * The copied files will keep the last modification date of the original file.
+     * @param matchingPath A resource path resolved using {@link PathMatchingResourcePatternResolver}.
+     * @param resourceRoot The root directory of the source - Needed, if the files are deep - and not flat - copied.
+     * @param targetDirectory The target directory, where the files are copied to. If the target directory does not exist,
+     * it is automatically created.
+     * @param cleanIfExists A flag to clean the directory, if it already exists.
+     * @param flatten If true, the tree structure is ignored and all file are copied directly into the target directory.
+     * @return the number of copied files.
+     */
+    public static int copyMatchingResourceFiles(String matchingPath, String resourceRoot, File targetDirectory, boolean cleanIfExists, boolean flatten) {
 
         if (!targetDirectory.exists()) {
             if (!targetDirectory.mkdirs()) {
                 throw new RuntimeException("Cannot create target directory \"" + targetDirectory + "\"!");
             }
-        }
-        if (clean) {
-            try {
-                FileUtils.cleanDirectory(targetDirectory);
-            } catch (IOException e) {
-                throw new RuntimeException("Cannot clean target directory \"" + targetDirectory + "\"!", e);
+        } else {
+            if (cleanIfExists) {
+                try {
+                    FileUtils.cleanDirectory(targetDirectory);
+                } catch (IOException e) {
+                    throw new RuntimeException("Cannot clean target directory \"" + targetDirectory + "\"!", e);
+                }
             }
         }
-
-        final String matchingPath = endsWith != null
-            ? ResourceUtils.CLASSPATH_URL_PREFIX + resourcePath + "/*" + endsWith
-            : ResourceUtils.CLASSPATH_URL_PREFIX + resourcePath + "/*";
 
         int count = 0;
         final Resource[] resources;
         try {
             resources = pathMatchingResourcePatternResolver.getResources(matchingPath);
         } catch (IOException e) {
-            throw new RuntimeException("Cannot lookup files in \"{}\"", e);
+            if (e.getMessage().contains("does not exist")) {
+                // Silently ignore, when there are no matching files
+                LOGGER.info("No files found in \"{}\"", matchingPath);
+                return 0;
+            }
+            throw new RuntimeException("Cannot lookup files in \"" + matchingPath + "\"!", e);
         }
         for (Resource resource : resources) {
+            // Directories are not readable
+            if (!resource.isReadable()) {
+                LOGGER.debug("Skipping unreadable resource \"{}\"", resource);
+                continue;
+            }
             final String filename = resource.getFilename();
             if (filename == null) {
                 continue;
             }
             try {
-                final File targetFile = new File(targetDirectory, filename);
-                final String resourceFilePath = ResourceUtils.CLASSPATH_URL_PREFIX + resourcePath;
                 final URL url;
                 try {
                     url = resource.getURL();
                 } catch (FileNotFoundException e) {
-                    throw new RuntimeException("Cannot get URL for resource file \"" + resourceFilePath
-                        + "/" + resource.getFilename() + "\"!", e);
+                    throw new RuntimeException("Cannot get URL for resource " + resource
+                        + " file=\"" + resource.getFilename() + "\"!", e);
                 }
-                try (OutputStream out = new FileOutputStream(targetFile)) {
-                    try (InputStream in = url.openStream()) {
-                        long copied = IoStreamUtil.pipeBlobStream(in, out);
-                        LOGGER.debug("Copied resource \"{}\" with {} bytes to temp file \"{}\"", url, copied, targetFile);
+
+                final File targetFile;
+                if (flatten) {
+                    targetFile = new File(targetDirectory, filename);
+                } else {
+                    final File resourceFile;
+                    try {
+                        resourceFile = new File(url.toURI().getSchemeSpecificPart());
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
+                    final String parentPath = resourceFile.getParent().replace('\\', '/');
+                    final String targetParent = extractNeededParentPath(parentPath, resourceRoot);
+                    if (targetParent == null) {
+                        throw new RuntimeException("parentPath/resourceRoot mismatch parentPath=\"" + parentPath
+                            + "\", resourceRoot=\"" + resourceRoot + "\"!");
+                    }
+                    targetFile = new File(targetDirectory, targetParent + filename);
+                    final File targetParentFile = targetFile.getParentFile();
+                    // Automatically create subdirectories, when flatten=false
+                    if (!targetParentFile.exists()) {
+                        boolean autoCreateTargetDirectories = targetParentFile.mkdirs();
+                        if (!autoCreateTargetDirectories) {
+                            throw new RuntimeException("Cannot create target directory \"" + targetParentFile + "\"!");
+                        }
                     }
                 }
+
+                copyUrlContentToFile(url, targetFile);
+                setLastModified(targetFile, resource.lastModified());
             } catch (IOException e) {
                 throw new RuntimeException("Cannot copy resource file \"" + filename + "\" to \"" + targetDirectory + "\"!", e);
             }
@@ -246,5 +315,38 @@ public final class FileUtil {
             suffix = "";
         }
         return new String[] { prefix, suffix };
+    }
+
+    static String extractNeededParentPath(String parentSourcePath, String resourceRoot) {
+
+        StringBuilder sb = new StringBuilder();
+        while (true) {
+            if (parentSourcePath.endsWith(resourceRoot)) {
+                return sb.toString();
+            }
+            int i = parentSourcePath.lastIndexOf('/');
+            if (i < 1) {
+                return null;
+            }
+            sb.insert(0, "/").insert(0, parentSourcePath.substring(i + 1));
+            parentSourcePath = parentSourcePath.substring(0, i);
+        }
+    }
+
+    static void copyUrlContentToFile(URL url, File file) throws IOException {
+        try (OutputStream out = new FileOutputStream(file)) {
+            try (InputStream in = url.openStream()) {
+                long copied = IoStreamUtil.pipeBlobStream(in, out);
+                LOGGER.debug("Copied URL \"{}\" with {} bytes to file \"{}\"", url, copied, file);
+            }
+        }
+    }
+
+    static void setLastModified(File file, long lastModified) {
+
+        boolean setLastModifiedOk = file.setLastModified(lastModified);
+        if (!setLastModifiedOk) {
+            LOGGER.warn("Cannot set modification date of file \"{}\"!", file);
+        }
     }
 }

@@ -10,7 +10,7 @@
   </parent>
   <groupId>com.giraone.thymeleaf</groupId>
   <artifactId>thymeleaf-processor</artifactId>
-  <version>0.3.2</version>
+  <version>0.3.3</version>
   <name>thymeleaf-processor</name>
   <description>HTTP endpoint to create HTML from Thymeleaf template and JSON data</description>
 

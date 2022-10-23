@@ -33,7 +33,8 @@ public class HtmlToPdfConverter {
     private static final Logger LOGGER = LoggerFactory.getLogger(HtmlToPdfConverter.class);
 
     private static final String PD4ML_LICENSE_RESOURCE_PATH = "pd4ml/pd4ml.lic";
-    private static final String PD4ML_FONTS_RESOURCE_PATH = "defaultfonts";
+    // Trailing / implies recursive (include subdirectories) lookup
+    private static final String PD4ML_FONTS_RESOURCE_PATH = "defaultfonts/";
     private static final String PD4ML_LICENSE_PATH;
     private static final String PD4ML_FONTS_TEMP_DIRECTORY_NAME_PREFIX = "pd4ml-fonts-";
     private static final int PD4ML_FIXED_HTML_WIDTH = 842;
@@ -41,7 +42,7 @@ public class HtmlToPdfConverter {
     static {
         final File pd4mlLicFile = FileUtil.getFileFromResource(PD4ML_LICENSE_RESOURCE_PATH);
         if (pd4mlLicFile == null) {
-            // Helpful in some local dev situations
+            // Helpful in some local dev situations, where there is no setting for the path yet.
             String licFileInFileSystem = "./src/main/resources/" + PD4ML_LICENSE_RESOURCE_PATH;
             if (new File(licFileInFileSystem).exists()) {
                 PD4ML_LICENSE_PATH = licFileInFileSystem;
@@ -58,7 +59,7 @@ public class HtmlToPdfConverter {
         }
 
         final File fontsDirectory = getFontsDirectory();
-        final int count = FileUtil.copyResourceFiles(PD4ML_FONTS_RESOURCE_PATH, "ttf", fontsDirectory, true);
+        final int count = FileUtil.copyResourceFiles(PD4ML_FONTS_RESOURCE_PATH, ".ttf", fontsDirectory, true, true);
         if (count > 0) {
             LOGGER.info("{} TTF font files copied to \"{}\"", count, fontsDirectory);
         } else {

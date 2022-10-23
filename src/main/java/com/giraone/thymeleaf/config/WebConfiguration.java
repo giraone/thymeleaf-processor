@@ -23,7 +23,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 
         log.info("WebConfiguration.addResourceHandlers");
 
-        CacheControl cacheControl = CacheControl.maxAge(1L, TimeUnit.MINUTES); // TODO!!!
+        CacheControl cacheControl = CacheControl.maxAge(1L, TimeUnit.MINUTES); // TODO: add configuration
 
         registry.addResourceHandler("/favicon.ico")
             .addResourceLocations("classpath:static/favicon.ico")
@@ -47,6 +47,12 @@ public class WebConfiguration implements WebMvcConfigurer {
             .allowedMethods("POST")
             .allowedHeaders("header1", "header2", "header3")
             .exposedHeaders("header1", "header2")
+            // one hour
+            .maxAge(3600);
+        registry.addMapping("/static/**")
+            .allowedOrigins("*") // Allow CORS for every domain
+            .allowedMethods("GET")
+            // one hour
             .maxAge(3600);
     }
 }

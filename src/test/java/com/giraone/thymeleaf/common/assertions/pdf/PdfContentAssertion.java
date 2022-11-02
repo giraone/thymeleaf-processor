@@ -1,9 +1,14 @@
 package com.giraone.thymeleaf.common.assertions.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.preflight.PreflightDocument;
+import org.apache.pdfbox.preflight.ValidationResult;
+import org.apache.pdfbox.preflight.parser.PreflightParser;
+import org.apache.pdfbox.preflight.utils.ByteArrayDataSource;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.assertj.core.api.AbstractAssert;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -88,6 +93,40 @@ public class PdfContentAssertion extends AbstractAssert<PdfContentAssertion, byt
         return this;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
+    public PdfContentAssertion isValidPdfA() throws IOException {
+
+        if (this.actual == null) {
+            failWithMessage("PDF bytes are null");
+            return this;
+        }
+
+        if (this.actual.length < 50) {
+            failWithMessage("PDF bytes are too small! Expected at least 50 bytes, but was " + this.actual.length);
+            return this;
+        }
+
+        PreflightParser parser = new PreflightParser(new ByteArrayDataSource(new ByteArrayInputStream(this.actual)));
+        parser.parse();
+
+        try (PreflightDocument document = parser.getPreflightDocument()) {
+            document.validate();
+            ValidationResult result = document.getResult();
+            if (!result.isValid()) {
+                final StringBuilder sb = new StringBuilder();
+                sb.append("PDF is not PDF/A!");
+                // for interpretation of error codes see:
+                // https://github.com/apache/pdfbox/blob/trunk/preflight/src/main/java/org/apache/pdfbox/preflight/PreflightConstants.java
+                for (ValidationResult.ValidationError error : result.getErrorsList()) {
+                    sb.append(System.lineSeparator()).append(error.getErrorCode()).append(" : ").append(error.getDetails());
+                }
+                failWithMessage(sb.toString());
+                return this;
+            }
+        }
+        return this;
+    }
+
     public PdfContentAssertion hasNumberOfPages(int expectedNumberOfPages) {
 
         isNotNull();
@@ -107,6 +146,7 @@ public class PdfContentAssertion extends AbstractAssert<PdfContentAssertion, byt
         return this;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public PdfContentAssertion containsTextStringOnAnyPage(String text) {
 
         isNotNull();

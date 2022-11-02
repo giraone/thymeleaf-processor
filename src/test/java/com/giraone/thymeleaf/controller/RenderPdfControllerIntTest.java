@@ -2,7 +2,6 @@ package com.giraone.thymeleaf.controller;
 
 import com.giraone.thymeleaf.common.FileUtil;
 import com.giraone.thymeleaf.common.assertions.pdf.PdfContentAssertion;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,13 +52,15 @@ class RenderPdfControllerIntTest {
 
     @ParameterizedTest
     @CsvSource({
-        "simple/input,simple/input,simple/input,simple",
-        "persons-table/persons,persons-table/persons,persons-table/persons,persons-table"
+        "simple/input,simple/input,simple/input,false,simple",
+        "persons-table/persons,persons-table/persons,persons-table/persons,false,persons-table",
+        "using-fonts/input,using-fonts/input,using-fonts/input,true,using-fonts"
     })
     void assertThat_renderToPdfByMultipartRequest_basicallyWorks(
         String jsonName,
         String htmlName,
         String cssName,
+        boolean checkPdfA,
         String outputName
     ) throws Exception {
 
@@ -93,6 +94,10 @@ class RenderPdfControllerIntTest {
 
         // assert
         PdfContentAssertion.assertThat(pdfBytes).isValidPdf();
+
+        if (checkPdfA) {
+            PdfContentAssertion.assertThat(pdfBytes).isValidPdfA();
+        }
 
         Files.write(Paths.get("target/test/output/json-to-pdf-" + outputName + ".pdf"), pdfBytes);
     }

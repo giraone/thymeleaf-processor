@@ -1,5 +1,8 @@
 package com.giraone.thymeleaf.service.convert;
 
+import com.giraone.io.copier.FileTreeCopier;
+import com.giraone.io.copier.web.WebServerFile;
+import com.giraone.io.copier.web.WebServerFileTreeProvider;
 import com.giraone.thymeleaf.common.FileUtil;
 import com.giraone.thymeleaf.config.ApplicationProperties;
 import com.pd4ml.Constants;
@@ -22,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,8 +37,7 @@ public class HtmlToPdfConverter {
     private static final Logger LOGGER = LoggerFactory.getLogger(HtmlToPdfConverter.class);
 
     private static final String PD4ML_LICENSE_RESOURCE_PATH = "pd4ml/pd4ml.lic";
-    // Trailing / implies recursive (include subdirectories) lookup
-    private static final String PD4ML_FONTS_RESOURCE_PATH = "defaultfonts/";
+    private static final String PD4ML_FONTS_URI = "java:defaultfonts";
     private static final String PD4ML_LICENSE_PATH;
     private static final String PD4ML_FONTS_TEMP_DIRECTORY_NAME_PREFIX = "pd4ml-fonts-";
     private static final int PD4ML_FIXED_HTML_WIDTH = 842;
@@ -58,12 +61,30 @@ public class HtmlToPdfConverter {
             LOGGER.info("Using PD4ML license \"{}\"", PD4ML_LICENSE_PATH);
         }
 
-        final File fontsDirectory = getFontsDirectory();
-        final int count = FileUtil.copyResourceFiles(PD4ML_FONTS_RESOURCE_PATH, ".ttf", fontsDirectory, true, true);
-        if (count > 0) {
-            LOGGER.info("{} TTF font files copied to \"{}\"", count, fontsDirectory);
-        } else {
-            LOGGER.warn("No TTF font files were copied from \"{}\" to \"{}\"", PD4ML_FONTS_RESOURCE_PATH, fontsDirectory);
+        // This supports copying TTF fonts from an asset server to a temp directory and using it,
+        // instead of loading fonts from the resource path of the service.
+        final String fontSourceHttp = System.getenv("PD4ML_FONTS_HTTP_SOURCE");
+        if (fontSourceHttp != null) {
+            URL url;
+            try {
+                url = new URL(PD4ML_FONTS_URI);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+            final File fontsDirectory = createFontsDirectory();
+            WebServerFileTreeProvider source = new WebServerFileTreeProvider(url);
+            source.withFileFilter(sourceFile -> sourceFile.getName().endsWith(".ttf") || sourceFile.getName().equals("pd4fonts.properties"));
+            FileTreeCopier<WebServerFile> fileTreeCopier = new FileTreeCopier<>();
+            fileTreeCopier.withFileTreeProvider(source);
+            fileTreeCopier.withTargetDirectory(fontsDirectory);
+            fileTreeCopier.withFlatCopy();
+
+            final int filesCopied = fileTreeCopier.copy().getFilesCopied();
+            if (filesCopied > 0) {
+                LOGGER.info("{} TTF font files copied from \"{}\" to \"{}\"", filesCopied, PD4ML_FONTS_URI, fontsDirectory);
+            } else {
+                LOGGER.warn("No TTF font files were copied from \"{}\" to \"{}\"", PD4ML_FONTS_URI, fontsDirectory);
+            }
         }
     }
 
@@ -143,15 +164,20 @@ public class HtmlToPdfConverter {
 
         // Load and embed fonts. See: https://pd4ml.tech/pdf-fonts/
         // Font embedding is a pre-requisite to PDF/A, but is also necessary for non PDF/A, when custom fonts are used.
-        String fontDir = System.getenv("PD4ML_FONTS");
-        if (fontDir != null) {
-            LOGGER.info("Using fonts from environment variable \"{}\"", fontDir);
-        } else {
+        final String fontSourceFile = System.getenv("PD4ML_FONTS_FILE_SOURCE");
+        final String fontSourceHttp = System.getenv("PD4ML_FONTS_HTTP_SOURCE");
+        final String fontDir;
+        if (fontSourceFile != null) {
+            fontDir = fontSourceFile;
+            LOGGER.info("Using font directory setting from environment variable PD4ML_FONTS_FILE_SOURCE=\"{}\"", fontSourceFile);
+        } else if (fontSourceHttp != null) {
             fontDir = getFontsDirectory().getAbsolutePath();
-            LOGGER.info("Using fonts from temp directory \"{}\" with copied resources", fontDir);
+            LOGGER.info("Using fonts from \"{}\" copied from PD4ML_FONTS_HTTP_SOURCE=\"{}\"", fontDir, fontSourceHttp);
+        } else {
+            fontDir = PD4ML_FONTS_URI;
+            LOGGER.info("Using fonts from resource \"{}\"", PD4ML_FONTS_URI);
         }
-        pd4ml.useTTF(fontDir, true);
-
+        pd4ml.useTTF(fontDir);
         Map<String, String> dynamicParams = new HashMap<>();
         // Add Support for media type "print" in addition to all, screen, pdf
         dynamicParams.put(PD4Constants.PD4ML_MEDIA_TYPE_PRINT, "add");
@@ -165,6 +191,17 @@ public class HtmlToPdfConverter {
             String message = (statusMessage.isError() ? "ERROR: " : "WARNING: ") + statusMessage.getMessage();
             LOGGER.info(message);
         }
+    }
+
+    private static File createFontsDirectory() {
+        final File fontsDirectory = getFontsDirectory();
+        if (!fontsDirectory.exists()) {
+            boolean ok = fontsDirectory.mkdirs();
+            if (!ok) {
+                LOGGER.warn("Font directory \"{}\" cannot be created!", fontsDirectory);
+            }
+        }
+        return fontsDirectory;
     }
 
     private static File getFontsDirectory() {

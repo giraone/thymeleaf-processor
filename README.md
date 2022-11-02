@@ -15,9 +15,11 @@ The project can be used *standalone* or as a backend service for the editor [thy
 ### Using fonts for PDF generation
 
 - See [Preparing TTF Fonts](https://pd4ml.com/support-topics/usage-examples/#ttf-fonts)
-- If an environment variable `PD4ML_FONTS` is defined, the value is passed to the *useTTF()* method of PD4ML.
-- The directory [src/main/resources/defaultfonts](src/main/resources/defaultfonts) contains three sample fonts downloaded
-  from https://google-webfonts-helper.herokuapp.com/:
+- If an environment variable `PD4ML_FONTS_FILE_SOURCE` is defined, the value is passed to the *useTTF()* method of PD4ML.
+- If an environment variable `PD4ML_FONTS_HTTP_SOURCE` is defined, TTF fonts from this URL are copied to the TEMP file system
+  and this font directory is passed to the *useTTF()* method of PD4ML.
+- If neither `PD4ML_FONTS_FILE_SOURCE` nor `PD4ML_FONTS_HTTP_SOURCE` is defined, the directory [src/main/resources/defaultfonts](src/main/resources/defaultfonts)
+  is used. It contains three sample fonts downloaded from https://google-webfonts-helper.herokuapp.com/:
   - [Roboto Regular and Roboto Italic](https://google-webfonts-helper.herokuapp.com/fonts/roboto?subsets=latin)
   - [Bad Script](https://google-webfonts-helper.herokuapp.com/fonts/bad-script?subsets=latin)
 - There is an example [using-fonts](src/test/resources/testdata/input/using-fonts) to show the usage in HTML and PDF generation.

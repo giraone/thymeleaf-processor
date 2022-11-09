@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -92,13 +93,17 @@ class RenderPdfControllerIntTest {
             .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "inline"))
             .andReturn().getResponse().getContentAsByteArray();
 
+        // Write PDF content for troubleshooting
+        File outputFile = new File("target/test/output/json-to-pdf-" + outputName + ".pdf");
+        Files.write(outputFile.toPath(), pdfBytes);
+
         // assert
         PdfContentAssertion.assertThat(pdfBytes).isValidPdf();
 
         if (checkPdfA) {
             PdfContentAssertion.assertThat(pdfBytes).isValidPdfA();
         }
-
-        Files.write(Paths.get("target/test/output/json-to-pdf-" + outputName + ".pdf"), pdfBytes);
+        // Delete, if everything was OK
+        outputFile.delete();
     }
 }
